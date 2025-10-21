@@ -1,0 +1,84 @@
+# ====================================
+# Global
+# ====================================
+.DS_Store
+Thumbs.db
+*.log
+logs/
+*.tmp
+*.bak
+
+# ====================================
+# Environment files
+# ====================================
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+.env.*
+!.env.example        # Keep a public example env
+
+# ====================================
+# Node / Next.js (frontend)
+# ====================================
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+frontend/dist/
+frontend/.vercel/
+frontend/.turbo/
+frontend/package-lock.json
+frontend/yarn.lock
+
+# Next.js build artifacts
+.next/
+out/
+.cache/
+
+# ====================================
+# Go (backend)
+# ====================================
+backend/bin/
+backend/build/
+backend/coverage/
+backend/.air.toml
+backend/.env
+backend/tmp/
+backend/*.exe
+backend/*.test
+backend/*.out
+
+# Go modules and cache
+/go.sum
+/go.mod
+**/vendor/
+*.exe
+*.test
+*.out
+
+# ====================================
+# Supabase
+# ====================================
+supabase/.temp/
+supabase/.env
+supabase/.branches/
+supabase/.local/
+
+# ====================================
+# Docker / CI
+# ====================================
+.docker/
+docker-compose.override.yml
+*.pid
+*.seed
+
+# ====================================
+# OS / Editor files
+# ====================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
