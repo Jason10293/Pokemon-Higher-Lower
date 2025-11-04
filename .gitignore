@@ -42,7 +42,6 @@ out/
 backend/bin/
 backend/build/
 backend/coverage/
-backend/.air.toml
 backend/.env
 backend/tmp/
 backend/*.exe
