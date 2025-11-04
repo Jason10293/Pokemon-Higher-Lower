@@ -15,9 +15,9 @@ func main() {
 		fmt.Println("No .env file found")
 	}
 
-	apiKey := os.Getenv("SUPABASE_API_KEY")
-	apiURL := os.Getenv("SUPABASE_DB_URL")
-	client := db.NewSupabaseClient(apiURL, apiKey)
+	supabaseApiKey := os.Getenv("SUPABASE_API_KEY")
+	supabaseApiURL := os.Getenv("SUPABASE_DB_URL")
+	client := db.NewSupabaseClient(supabaseApiURL, supabaseApiKey)
 	if client == nil {
 		log.Fatal("Failed to create Supabase client")
 	}
@@ -27,4 +27,5 @@ func main() {
 	if err := server.Start(); err != nil {
 		log.Fatal("Failed to start API server:", err)
 	}
+
 }

@@ -1,10 +1,11 @@
 package api
 
 import (
-	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/Jason10293/Pokemon-Higher-Lower/backend/handlers"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/supabase-community/supabase-go"
 )
 
@@ -21,9 +22,9 @@ func NewAPIServer(addr string, dbClient *supabase.Client) *APIServer {
 }
 
 func (s *APIServer) Start() error {
-	router := mux.NewRouter()
-	// subrouter := router.PathPrefix("/api/v1").Subrouter()
-
-	log.Println("Starting API server on", s.addr)
-	return http.ListenAndServe(s.addr, router)
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Mount("/cards", handlers.CardRoutes())
+	http.ListenAndServe(":3000", r)
+	return nil
 }
