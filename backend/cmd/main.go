@@ -11,12 +11,12 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load(); err != nil {
+	if err := godotenv.Load("../.env"); err != nil {
 		fmt.Println("No .env file found")
 	}
 
-	supabaseApiKey := os.Getenv("SUPABASE_API_KEY")
-	supabaseApiURL := os.Getenv("SUPABASE_DB_URL")
+	supabaseApiKey := os.Getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
+	supabaseApiURL := os.Getenv("NEXT_PUBLIC_SUPABASE_URL")
 	client := db.NewSupabaseClient(supabaseApiURL, supabaseApiKey)
 	if client == nil {
 		log.Fatal("Failed to create Supabase client")
