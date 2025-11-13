@@ -18,8 +18,8 @@ type CardResponse struct {
 }
 
 type Card struct {
-	Id           int     `json:"id" db:"id"`
-	Name         string  `json:"name" db:"name"`
-	AveragePrice float64 `json:"average_price" db:"average_price"`
-	ImageURL     string  `json:"image_url" db:"image_url"`
+	Id       int     `json:"id" db:"id"`
+	Name     string  `json:"name" db:"name"`
+	Price    float64 `json:"price" db:"price"`
+	ImageURL string  `json:"image_url" db:"image_url"`
 }

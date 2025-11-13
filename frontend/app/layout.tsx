@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "My App",
-  description: "Description here",
+  title: "Pokemon Higher / Lower",
+  description: "Guess which Pokemon card is worth more.",
 };
 
 export default function RootLayout({
@@ -12,7 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body className="bg-zinc-50 text-zinc-900 antialiased">{children}</body>
     </html>
   );
 }

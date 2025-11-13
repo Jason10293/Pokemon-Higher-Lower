@@ -61,12 +61,12 @@ func (h *CardHandler) FetchCardById(w http.ResponseWriter, r *http.Request) {
 
 	// Shape the response to what the frontend expects
 	type cardOut struct {
-		Name         string  `json:"name"`
+		Title        string  `json:"title"`
 		AveragePrice float64 `json:"averagePrice"`
 		Image        string  `json:"image"`
 	}
 	out := cardOut{
-		Name:  data.Data.Name,
+		Title: data.Data.Name,
 		Image: data.Data.Images.Small,
 	}
 	// Best-effort extraction of price; default to 0 if missing
@@ -139,7 +139,7 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 		Image        string  `json:"image"`
 	}{
 		Name:         rows[0].Name,
-		AveragePrice: rows[0].AveragePrice,
+		AveragePrice: rows[0].Price,
 		Image:        rows[0].ImageURL,
 	}
 

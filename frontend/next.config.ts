@@ -5,8 +5,7 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "www.pokemon.com",
-
+        hostname: "images.pokemontcg.io",
         pathname: "/**",
       },
     ],
