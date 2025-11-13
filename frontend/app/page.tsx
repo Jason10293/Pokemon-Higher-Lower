@@ -4,36 +4,25 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 
 export default function HomePage() {
-  const [card, setCard] = useState<{
-    name: string;
-    averagePrice: number;
-    image: string;
-  } | null>(null);
-
+  const [card, setCard] = useState<any>({});
   useEffect(() => {
-    async function fetchCards() {
-      try {
-        const response = await fetch(
-          "http://localhost:8080/cards/fetch/xy7-54"
-        );
-        const data = await response.json();
-        setCard(data);
-      } catch (error) {
-        console.error("error fetching cards: ", error);
-      }
+    async function getRandomCard() {
+      const res = await fetch("http://localhost:8080/cards/randomCard");
+      const data = await res.json();
+      setCard(data);
     }
-    fetchCards();
+    getRandomCard();
   }, []);
+
+  console.log("card data:", card);
   return (
-    <main>
-      <h1>Welcome to Pokemon Higher lower!</h1>
-      <h1>
-        Card Name:
-        {card?.name} {card?.averagePrice}
-      </h1>
-      {card && card.image && (
-        <Image src={card.image} alt={card.name} width={200} height={200} />
-      )}
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div>
+        <div>
+          <h1>{card.name}</h1>
+          <Image src={card.image} alt={card.name} width={200} height={200} />
+        </div>
+      </div>
     </main>
   );
 }

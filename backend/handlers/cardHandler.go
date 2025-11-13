@@ -4,21 +4,22 @@ import (
 	"encoding/json"
 	"io"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/Jason10293/Pokemon-Higher-Lower/backend/types"
 	"github.com/go-chi/chi/v5"
+	"github.com/supabase-community/supabase-go"
 )
 
 type CardHandler struct {
-	card types.CardResponse
+	db *supabase.Client
 }
 
-func NewCardHandler(card types.CardResponse) *CardHandler {
-	return &CardHandler{
-		card: card,
-	}
+func NewCardHandler(db *supabase.Client) *CardHandler {
+	return &CardHandler{db: db}
 }
 
 func (h *CardHandler) FetchCardById(w http.ResponseWriter, r *http.Request) {
@@ -77,9 +78,83 @@ func (h *CardHandler) FetchCardById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
-func CardRoutes() chi.Router {
+
+// GetRandomCard returns a single random card from the Supabase "cards" table.
+func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
+	if h.db == nil {
+		http.Error(w, "database not configured", http.StatusInternalServerError)
+		return
+	}
+
+	// Use a HEAD request with count to retrieve total rows efficiently
+	// Capture the raw bytes too for debugging — some clients return empty
+	// body for HEAD but may include useful headers for count.
+	bsCount, count, err := h.db.From("cards").
+		Select("id", "exact", true).
+		Execute()
+	if err != nil {
+		log.Printf("failed to get cards count: %v", err)
+		http.Error(w, "failed to query database", http.StatusInternalServerError)
+		return
+	}
+	// Debug: log the raw response and count so we can see what's returned
+	if len(bsCount) > 0 {
+		log.Printf("raw count response: %s", string(bsCount))
+	}
+	log.Printf("cards count: %d", count)
+	if count <= 0 {
+		http.Error(w, "no cards available", http.StatusNotFound)
+		return
+	}
+
+	rand.Seed(time.Now().UnixNano())
+	offset := rand.Intn(int(count))
+
+	// Fetch exactly one row at the random offset
+	bs, _, err := h.db.From("cards").
+		Select("*", "", false).
+		Range(offset, offset, "").
+		Execute()
+	if err != nil {
+		log.Printf("failed to fetch random card: %v", err)
+		http.Error(w, "failed to query database", http.StatusInternalServerError)
+		return
+	}
+
+	var rows []types.Card
+	if err := json.Unmarshal(bs, &rows); err != nil {
+		log.Printf("failed to decode random card: %v", err)
+		http.Error(w, "failed to decode data", http.StatusInternalServerError)
+		return
+	}
+	if len(rows) == 0 {
+		http.Error(w, "no card found", http.StatusNotFound)
+		return
+	}
+
+	// Shape the response similar to FetchCardById
+	out := struct {
+		Name         string  `json:"name"`
+		AveragePrice float64 `json:"averagePrice"`
+		Image        string  `json:"image"`
+	}{
+		Name:         rows[0].Name,
+		AveragePrice: rows[0].AveragePrice,
+		Image:        rows[0].ImageURL,
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(out); err != nil {
+		log.Printf("error encoding random card response: %v", err)
+		http.Error(w, "failed to encode data", http.StatusInternalServerError)
+		return
+	}
+}
+
+func CardRoutes(db *supabase.Client) chi.Router {
 	r := chi.NewRouter()
-	CardHandler := NewCardHandler(types.CardResponse{})
-	r.Get("/fetch/{id}", CardHandler.FetchCardById)
+	cardHandler := NewCardHandler(db)
+	r.Get("/fetch/{id}", cardHandler.FetchCardById)
+	r.Get("/randomCard", cardHandler.GetRandomCard)
 	return r
 }

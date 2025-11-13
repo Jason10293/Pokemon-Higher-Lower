@@ -33,6 +33,6 @@ func (s *APIServer) Start() error {
 		AllowCredentials: true,
 	}))
 
-	r.Mount("/cards", handlers.CardRoutes())
-	return http.ListenAndServe(":8080", r)
+    r.Mount("/cards", handlers.CardRoutes(s.DB))
+    return http.ListenAndServe(":8080", r)
 }

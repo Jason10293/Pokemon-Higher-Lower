@@ -16,3 +16,10 @@ type CardResponse struct {
 		} `json:"tcgplayer"`
 	} `json:"data"`
 }
+
+type Card struct {
+	Id           int     `json:"id" db:"id"`
+	Name         string  `json:"name" db:"name"`
+	AveragePrice float64 `json:"average_price" db:"average_price"`
+	ImageURL     string  `json:"image_url" db:"image_url"`
+}
