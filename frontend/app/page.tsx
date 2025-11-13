@@ -19,6 +19,7 @@ export default function HomePage() {
     }
     const data = await res.json();
     return {
+      id: data.id,
       name: data.name,
       image: data.image,
       averagePrice:
@@ -37,6 +38,15 @@ export default function HomePage() {
           fetchRandomCard(),
           fetchRandomCard(),
         ]);
+        if (first.id === second.id) {
+          // If both cards are the same, fetch a new second card
+          const newSecond = await fetchRandomCard();
+          if (cancelled) return;
+          setLeftCard(first);
+          setRightCard(newSecond);
+          setResult(null);
+          return;
+        }
         if (cancelled) return;
         setLeftCard(first);
         setRightCard(second);

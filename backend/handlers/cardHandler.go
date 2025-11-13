@@ -134,10 +134,12 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 
 	// Shape the response similar to FetchCardById
 	out := struct {
+		Id           int     `json:"id"`
 		Name         string  `json:"name"`
 		AveragePrice float64 `json:"averagePrice"`
 		Image        string  `json:"image"`
 	}{
+		Id:           rows[0].Id,
 		Name:         rows[0].Name,
 		AveragePrice: rows[0].Price,
 		Image:        rows[0].ImageURL,
