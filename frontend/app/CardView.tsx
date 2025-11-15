@@ -30,14 +30,13 @@ export function CardView({ card, showPrice }: CardViewProps) {
           {card.name}
         </p>
         {showPrice ? (
-          <p className="text-xs text-zinc-500">
+          <p className="text-xl text-zinc-500">
             ${card.averagePrice.toFixed(2)}
           </p>
         ) : (
-          <p className="text-xs tracking-[0.35em] text-zinc-400">???</p>
+          <p className="text-xl tracking-[0.35em] text-zinc-400">???</p>
         )}
       </div>
     </div>
   );
 }
-

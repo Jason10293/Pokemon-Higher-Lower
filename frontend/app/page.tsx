@@ -11,6 +11,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<"correct" | "wrong" | null>(null);
+  const [score, setScore] = useState<number>(0);
 
   async function fetchRandomCard(): Promise<Card> {
     const res = await fetch("http://localhost:8080/cards/randomCard");
@@ -74,9 +75,9 @@ export default function HomePage() {
     if (!leftCard || !rightCard) return;
     const isHigher = rightCard.averagePrice > leftCard.averagePrice;
     const guessedHigher = direction === "higher";
-    const correct =
-      (guessedHigher && isHigher) || (!guessedHigher && !isHigher);
-    setResult(correct ? "correct" : "wrong");
+    if ((guessedHigher && isHigher) || (!guessedHigher && !isHigher)) {
+      setScore((prev) => prev + 1);
+    }
   }
 
   return (
@@ -106,6 +107,7 @@ export default function HomePage() {
               </p>
               <CardView card={leftCard} showPrice />
             </div>
+            <p className="mt-2 text-xl text-zinc-600">Score: {score}</p>
           </section>
 
           <section className="flex flex-1 flex-col gap-4">
