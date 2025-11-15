@@ -31,4 +31,3 @@ export function GuessControls({ disabled, onGuess }: GuessControlsProps) {
     </div>
   );
 }
-

@@ -131,7 +131,7 @@ func main() {
 		return
 	}
 
-	for page := 79; page <= 85; page++ {
+	for page := 1; page <= 85; page++ {
 		fmt.Printf("Processing page %d\n", page)
 		cards, err := fetchPage(page)
 		if err != nil {

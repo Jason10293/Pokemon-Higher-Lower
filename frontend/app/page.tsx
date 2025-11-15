@@ -12,7 +12,9 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<"correct" | "wrong" | null>(null);
   const [score, setScore] = useState<number>(0);
-
+  const [guessed, setGuessed] = useState<boolean>(false);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const [isMovingCard, setIsMovingCard] = useState<boolean>(false);
   async function fetchRandomCard(): Promise<Card> {
     const res = await fetch("http://localhost:8080/cards/randomCard");
     if (!res.ok) {
@@ -72,12 +74,42 @@ export default function HomePage() {
   }, []);
 
   function handleGuess(direction: "higher" | "lower") {
-    if (!leftCard || !rightCard) return;
+    if (!leftCard || !rightCard || isAnimating) return;
     const isHigher = rightCard.averagePrice > leftCard.averagePrice;
     const guessedHigher = direction === "higher";
-    if ((guessedHigher && isHigher) || (!guessedHigher && !isHigher)) {
+    const isCorrect =
+      (guessedHigher && isHigher) || (!guessedHigher && !isHigher);
+
+    setIsAnimating(true);
+    if (isCorrect) {
       setScore((prev) => prev + 1);
     }
+    setResult(isCorrect ? "correct" : "wrong");
+    setGuessed(true);
+
+    const loadNextCard = async () => {
+      try {
+        const newCard = await fetchRandomCard();
+        setIsMovingCard(true);
+
+        setTimeout(() => {
+          setLeftCard(rightCard);
+          setRightCard(newCard);
+          setGuessed(false);
+          setResult(null);
+          setIsMovingCard(false);
+          setIsAnimating(false);
+        }, 500);
+      } catch (err) {
+        console.error(err);
+        setError("Failed to load next card. Please try again.");
+        setGuessed(false);
+        setResult(null);
+        setIsAnimating(false);
+      }
+    };
+
+    loadNextCard();
   }
 
   return (
@@ -105,7 +137,9 @@ export default function HomePage() {
               <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-zinc-500">
                 Current card
               </p>
-              <CardView card={leftCard} showPrice />
+              <div className={isMovingCard ? "card-fade-out" : ""}>
+                <CardView card={leftCard} showPrice />
+              </div>
             </div>
             <p className="mt-2 text-xl text-zinc-600">Score: {score}</p>
           </section>
@@ -115,11 +149,26 @@ export default function HomePage() {
               <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-zinc-500">
                 Next card
               </p>
-              <CardView card={rightCard} showPrice={false} />
+              <div
+                className={`${
+                  guessed && result === "correct" && !isMovingCard
+                    ? "card-correct"
+                    : ""
+                }${
+                  guessed && result === "wrong" && !isMovingCard
+                    ? " card-wrong"
+                    : ""
+                }${isMovingCard ? " card-moving-right-to-left" : ""}`}
+                onClick={() => {
+                  setGuessed(true);
+                }}
+              >
+                <CardView card={rightCard} showPrice={guessed} />
+              </div>
             </div>
 
             <GuessControls
-              disabled={loading || !leftCard || !rightCard}
+              disabled={loading || !leftCard || !rightCard || isAnimating}
               onGuess={handleGuess}
             />
           </section>
@@ -130,11 +179,7 @@ export default function HomePage() {
             className={`mt-6 text-sm ${
               result === "correct" ? "text-emerald-400" : "text-rose-400"
             }`}
-          >
-            {result === "correct"
-              ? "Nice! You guessed correctly."
-              : "Not quite. Try another round."}
-          </p>
+          ></p>
         )}
       </div>
     </main>
