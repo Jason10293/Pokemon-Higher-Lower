@@ -25,6 +25,7 @@ export default function HomePage() {
       id: data.id,
       name: data.name,
       image: data.image,
+      setName: data.setName ?? "",
       averagePrice:
         typeof data.averagePrice === "number" ? data.averagePrice : 0,
     };

@@ -1,5 +1,5 @@
 import type { Card } from "./types";
-
+import { Tooltip } from "./tooltip";
 type CardViewProps = {
   card: Card | null;
   showPrice: boolean;
@@ -26,9 +26,13 @@ export function CardView({ card, showPrice }: CardViewProps) {
         )}
       </div>
       <div className="space-y-1 text-center">
-        <p className="text-sm font-medium text-zinc-900 line-clamp-1">
-          {card.name}
-        </p>
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-zinc-900 line-clamp-1">
+            {card.name}
+          </p>
+          <Tooltip content={`Set: ${card.setName}`}></Tooltip>
+        </div>
+
         {showPrice ? (
           <p className="text-xl text-zinc-500">
             ${card.averagePrice.toFixed(2)}

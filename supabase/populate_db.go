@@ -45,7 +45,7 @@ func fetchPage(page int) ([]Card, error) {
 	// Construct the API URL with pagination
 	url := fmt.Sprintf("https://api.pokemontcg.io/v2/cards?page=%d&pageSize=250", page)
 
-	// Create a new HTTP request
+	// 	 a new HTTP request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err

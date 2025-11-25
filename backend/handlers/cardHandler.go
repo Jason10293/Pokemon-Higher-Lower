@@ -138,11 +138,13 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 		Name         string  `json:"name"`
 		AveragePrice float64 `json:"averagePrice"`
 		Image        string  `json:"image"`
+		SetName      string  `json:"setName"`
 	}{
 		Id:           rows[0].Id,
 		Name:         rows[0].Name,
 		AveragePrice: rows[0].Price,
 		Image:        rows[0].ImageURL,
+		SetName:      rows[0].SetName,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

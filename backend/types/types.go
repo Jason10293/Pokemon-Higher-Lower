@@ -22,4 +22,5 @@ type Card struct {
 	Name     string  `json:"name" db:"name"`
 	Price    float64 `json:"price" db:"price"`
 	ImageURL string  `json:"image_url" db:"image_url"`
+	SetName  string  `json:"set_name" db:"set_name"`
 }
