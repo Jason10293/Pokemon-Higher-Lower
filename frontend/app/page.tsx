@@ -160,9 +160,6 @@ export default function HomePage() {
                     ? " card-wrong"
                     : ""
                 }${isMovingCard ? " card-moving-right-to-left" : ""}`}
-                onClick={() => {
-                  setGuessed(true);
-                }}
               >
                 <CardView card={rightCard} showPrice={guessed} />
               </div>
