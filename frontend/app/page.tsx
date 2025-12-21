@@ -114,7 +114,7 @@ export default function HomePage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center px-4 py-10">
+    <main className="gradient-hero overflow-hidden flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-4xl">
         <header className="mb-8 text-center">
           <h1 className="text-3xl font-semibold tracking-tight">
@@ -171,14 +171,6 @@ export default function HomePage() {
             />
           </section>
         </div>
-
-        {result && (
-          <p
-            className={`mt-6 text-sm ${
-              result === "correct" ? "text-emerald-400" : "text-rose-400"
-            }`}
-          ></p>
-        )}
       </div>
     </main>
   );
