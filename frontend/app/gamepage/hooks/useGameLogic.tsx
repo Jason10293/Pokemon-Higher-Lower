@@ -1,65 +1,115 @@
-import { useState, useEffect } from "react";
+import { useEffect, useReducer, useRef } from "react";
 import type { Card, GameLogic } from "@/app/types";
+import { fetchRandomCard, fetchTwoDifferentCards } from "../api/cards";
+
+type GameState = Omit<GameLogic, "handleGuess">;
+
+type GameAction =
+  | { type: "load_start" }
+  | { type: "load_success"; leftCard: Card; rightCard: Card }
+  | { type: "load_error"; message: string }
+  | { type: "guess_result"; isCorrect: boolean }
+  | { type: "advance_start" }
+  | { type: "advance_finish"; leftCard: Card; rightCard: Card }
+  | { type: "advance_error"; message: string };
+
+const initialState: GameState = {
+  leftCard: null,
+  rightCard: null,
+  loading: true,
+  error: null,
+  result: null,
+  score: 0,
+  guessed: false,
+  isAnimating: false,
+  isMovingCard: false,
+};
+
+function reducer(state: GameState, action: GameAction): GameState {
+  switch (action.type) {
+    case "load_start":
+      return { ...state, loading: true, error: null };
+    case "load_success":
+      return {
+        ...state,
+        loading: false,
+        error: null,
+        leftCard: action.leftCard,
+        rightCard: action.rightCard,
+        result: null,
+      };
+    case "load_error":
+      return { ...state, loading: false, error: action.message };
+    case "guess_result":
+      return {
+        ...state,
+        isAnimating: true,
+        guessed: true,
+        result: action.isCorrect ? "correct" : "wrong",
+        score: action.isCorrect ? state.score + 1 : state.score,
+      };
+    case "advance_start":
+      return { ...state, isMovingCard: true };
+    case "advance_finish":
+      return {
+        ...state,
+        error: null,
+        leftCard: action.leftCard,
+        rightCard: action.rightCard,
+        guessed: false,
+        result: null,
+        isMovingCard: false,
+        isAnimating: false,
+      };
+    case "advance_error":
+      return {
+        ...state,
+        error: action.message,
+        guessed: false,
+        result: null,
+        isAnimating: false,
+        isMovingCard: false,
+      };
+    default:
+      return state;
+  }
+}
 
 export function useCardGame(): GameLogic {
   const CARD_TRANSITION_DURATION = 500; // in milliseconds
-  const [leftCard, setLeftCard] = useState<Card | null>(null);
-  const [rightCard, setRightCard] = useState<Card | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<"correct" | "wrong" | null>(null);
-  const [score, setScore] = useState<number>(0);
-  const [guessed, setGuessed] = useState<boolean>(false);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
-  const [isMovingCard, setIsMovingCard] = useState<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
-  async function fetchRandomCard(): Promise<Card> {
-    const res = await fetch("http://localhost:8080/cards/randomCard");
-    if (!res.ok) {
-      throw new Error("Failed to fetch card");
-    }
-    const data = await res.json();
-    return {
-      id: data.id,
-      name: data.name,
-      image: data.image,
-      setName: data.setName ?? "",
-      averagePrice:
-        typeof data.averagePrice === "number" ? data.averagePrice : 0,
-    };
+  function createAbortController() {
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    return controller;
   }
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = createAbortController();
 
     async function loadCards() {
       try {
-        setLoading(true);
-        setError(null);
-        const [first, second] = await Promise.all([
-          fetchRandomCard(),
-          fetchRandomCard(),
-        ]);
-        if (first.id === second.id) {
-          const newSecond = await fetchRandomCard();
-          if (cancelled) return;
-          setLeftCard(first);
-          setRightCard(newSecond);
-          setResult(null);
-          return;
-        }
-        if (cancelled) return;
-        setLeftCard(first);
-        setRightCard(second);
-        setResult(null);
+        dispatch({ type: "load_start" });
+        const [first, second] = await fetchTwoDifferentCards(
+          controller.signal,
+        );
+        if (controller.signal.aborted) return;
+        dispatch({
+          type: "load_success",
+          leftCard: first,
+          rightCard: second,
+        });
       } catch (err) {
-        if (!cancelled) {
+        if (!controller.signal.aborted) {
           console.error(err);
-          setError("Failed to load cards. Please try again.");
-        }
-      } finally {
-        if (!cancelled) {
-          setLoading(false);
+          dispatch({
+            type: "load_error",
+            message: "Failed to load cards. Please try again.",
+          });
         }
       }
     }
@@ -67,43 +117,48 @@ export function useCardGame(): GameLogic {
     loadCards();
 
     return () => {
-      cancelled = true;
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      controller.abort();
     };
   }, []);
 
   function handleGuess(direction: "higher" | "lower") {
-    if (!leftCard || !rightCard || isAnimating) return;
-    const isHigher = rightCard.averagePrice > leftCard.averagePrice;
+    if (!state.leftCard || !state.rightCard || state.isAnimating) return;
+    const isHigher = state.rightCard.averagePrice > state.leftCard.averagePrice;
     const guessedHigher = direction === "higher";
     const isCorrect =
       (guessedHigher && isHigher) || (!guessedHigher && !isHigher);
+    const currentRightCard = state.rightCard;
 
-    setIsAnimating(true);
-    if (isCorrect) {
-      setScore((prev) => prev + 1);
-    }
-    setResult(isCorrect ? "correct" : "wrong");
-    setGuessed(true);
+    dispatch({ type: "guess_result", isCorrect });
 
     const loadNextCard = async () => {
+      const controller = createAbortController();
       try {
-        const newCard = await fetchRandomCard();
-        setIsMovingCard(true);
+        const newCard = await fetchRandomCard(controller.signal);
+        if (controller.signal.aborted) return;
+        dispatch({ type: "advance_start" });
 
-        setTimeout(() => {
-          setLeftCard(rightCard);
-          setRightCard(newCard);
-          setGuessed(false);
-          setResult(null);
-          setIsMovingCard(false);
-          setIsAnimating(false);
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        timeoutRef.current = setTimeout(() => {
+          dispatch({
+            type: "advance_finish",
+            leftCard: currentRightCard,
+            rightCard: newCard,
+          });
         }, CARD_TRANSITION_DURATION);
       } catch (err) {
-        console.error(err);
-        setError("Failed to load next card. Please try again.");
-        setGuessed(false);
-        setResult(null);
-        setIsAnimating(false);
+        if (!controller.signal.aborted) {
+          console.error(err);
+          dispatch({
+            type: "advance_error",
+            message: "Failed to load next card. Please try again.",
+          });
+        }
       }
     };
 
@@ -111,15 +166,7 @@ export function useCardGame(): GameLogic {
   }
 
   return {
-    leftCard,
-    rightCard,
-    loading,
-    error,
-    result,
-    score,
-    guessed,
-    isAnimating,
-    isMovingCard,
+    ...state,
     handleGuess,
   };
 }
