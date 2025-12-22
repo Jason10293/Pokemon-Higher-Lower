@@ -20,8 +20,11 @@ export default function HomePage() {
         {game.error && <ErrorNotice message={game.error} />}
 
         <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
-          <section className="flex-1">
-            <CardPanel label="Current card">
+          <section className="flex flex-1 flex-col items-center">
+            <CardPanel
+              label="Current card"
+              className="w-full max-w-sm min-h-[420px]"
+            >
               <div className={game.isMovingCard ? "card-fade-out" : ""}>
                 <CardView card={game.leftCard} showPrice />
               </div>
@@ -29,8 +32,11 @@ export default function HomePage() {
             <ScoreDisplay score={game.score} />
           </section>
 
-          <section className="flex flex-1 flex-col gap-4">
-            <CardPanel label="Next card">
+          <section className="flex flex-1 flex-col items-center gap-4">
+            <CardPanel
+              label="Next card"
+              className="w-full max-w-sm min-h-[420px]"
+            >
               <div
                 className={`${
                   game.guessed &&

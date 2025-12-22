@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { Card, GameLogic } from "@/app/types";
 
 export function useCardGame(): GameLogic {
+  const CARD_TRANSITION_DURATION = 500; // in milliseconds
   const [leftCard, setLeftCard] = useState<Card | null>(null);
   const [rightCard, setRightCard] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
@@ -96,7 +97,7 @@ export function useCardGame(): GameLogic {
           setResult(null);
           setIsMovingCard(false);
           setIsAnimating(false);
-        }, 500);
+        }, CARD_TRANSITION_DURATION);
       } catch (err) {
         console.error(err);
         setError("Failed to load next card. Please try again.");

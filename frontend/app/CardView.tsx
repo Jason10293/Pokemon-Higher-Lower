@@ -8,7 +8,7 @@ type CardViewProps = {
 export function CardView({ card, showPrice }: CardViewProps) {
   if (!card) {
     return (
-      <div className="flex h-56 items-center justify-center rounded-xl border border-dashed border-zinc-300 bg-white text-sm text-zinc-500">
+      <div className="flex h-72 items-center justify-center rounded-xl border border-dashed border-zinc-300 bg-white text-sm text-zinc-500">
         Loading card...
       </div>
     );
@@ -16,7 +16,7 @@ export function CardView({ card, showPrice }: CardViewProps) {
 
   return (
     <div className="flex flex-col items-center gap-2 overflow-hidden">
-      <div className="relative h-64 w-48 overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-sm">
+      <div className="relative h-80 w-56 overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-sm">
         {card.image ? (
           <img src={card.image} alt={card.name} className="h-full w-full" />
         ) : (
