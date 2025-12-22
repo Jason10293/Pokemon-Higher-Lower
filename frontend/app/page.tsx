@@ -1,6 +1,6 @@
 import { Zap } from "lucide-react";
 import { Button } from "@/app/components/button";
-
+import Link from "next/link";
 const featureCardData = [
   {
     key: "1",
@@ -14,6 +14,7 @@ const featureCardData = [
   },
   { key: "3", title: "Real Prices", description: "Based on live market data." },
 ];
+
 export default function HomePage() {
   return (
     <div className="min-h-screen gradient-hero relative overflow-hidden">
@@ -32,11 +33,12 @@ export default function HomePage() {
         <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-lg mx-auto text-center mt-4">
           Test your Pokemon knowledge by guessing which card is more expensive!
         </p>
-
-        <Button variant="hero" size="xl" className="group">
-          <Zap className="w-6 h-6 mr-2" />
-          Start Playing!
-        </Button>
+        <Link href="/gamepage">
+          <Button variant="hero" size="xl" className="group">
+            <Zap className="w-6 h-6 mr-2" />
+            Start Playing!
+          </Button>
+        </Link>
       </div>
 
       {/* Feature Cards */}

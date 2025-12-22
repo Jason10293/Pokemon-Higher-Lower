@@ -14,12 +14,12 @@ export default function HomePage() {
 
   return (
     <main className="gradient-hero overflow-hidden flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="w-full max-w-5xl">
+      <div className="w-full max-w-4xl">
         <GameHeader />
 
         {game.error && <ErrorNotice message={game.error} />}
 
-        <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
+        <div className="flex flex-col md:flex-row md:items-stretch">
           <section className="flex flex-1 flex-col items-center">
             <CardPanel
               label="Current card"

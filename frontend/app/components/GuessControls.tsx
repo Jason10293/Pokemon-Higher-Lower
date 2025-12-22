@@ -23,7 +23,7 @@ export function GuessControls({ disabled, onGuess }: GuessControlsProps) {
         type="button"
         onClick={() => onGuess("higher")}
         disabled={disabled}
-        className="inline-flex min-w-28 items-center justify-center gap-2 rounded-full bg-emerald-500 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
+        className="inline-flex min-w-28 items-center justify-center gap-2 rounded-full bg-secondary px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-secondary/80 disabled:cursor-not-allowed disabled:opacity-60"
       >
         Higher
         <ArrowUp className="h-4 w-4" />
