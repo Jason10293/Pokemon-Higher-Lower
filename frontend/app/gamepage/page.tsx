@@ -11,56 +11,50 @@ import type { GameLogic } from "../types";
 
 export default function HomePage() {
   const game: GameLogic = useCardGame();
-  const {
-    leftCard,
-    rightCard,
-    loading,
-    error,
-    result,
-    score,
-    guessed,
-    isAnimating,
-    isMovingCard,
-    handleGuess,
-  } = useCardGame();
 
   return (
     <main className="gradient-hero overflow-hidden flex min-h-screen items-center justify-center px-4 py-10">
       <div className="w-full max-w-5xl">
         <GameHeader />
 
-        {error && <ErrorNotice message={error} />}
+        {game.error && <ErrorNotice message={game.error} />}
 
         <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
           <section className="flex-1">
             <CardPanel label="Current card">
-              <div className={isMovingCard ? "card-fade-out" : ""}>
-                <CardView card={leftCard} showPrice />
+              <div className={game.isMovingCard ? "card-fade-out" : ""}>
+                <CardView card={game.leftCard} showPrice />
               </div>
             </CardPanel>
-            <ScoreDisplay score={score} />
+            <ScoreDisplay score={game.score} />
           </section>
 
           <section className="flex flex-1 flex-col gap-4">
             <CardPanel label="Next card">
               <div
                 className={`${
-                  guessed && result === "correct" && !isMovingCard
+                  game.guessed &&
+                  game.result === "correct" &&
+                  !game.isMovingCard
                     ? "card-correct"
                     : ""
                 }${
-                  guessed && result === "wrong" && !isMovingCard
+                  game.guessed && game.result === "wrong" && !game.isMovingCard
                     ? " card-wrong"
                     : ""
-                }${isMovingCard ? " card-moving-right-to-left" : ""}`}
+                }${game.isMovingCard ? " card-moving-right-to-left" : ""}`}
               >
-                <CardView card={rightCard} showPrice={guessed} />
+                <CardView card={game.rightCard} showPrice={game.guessed} />
               </div>
             </CardPanel>
-
             <GuessControls
-              disabled={loading || !leftCard || !rightCard || isAnimating}
-              onGuess={handleGuess}
+              disabled={
+                game.loading ||
+                !game.leftCard ||
+                !game.rightCard ||
+                game.isAnimating
+              }
+              onGuess={game.handleGuess}
             />
           </section>
         </div>
