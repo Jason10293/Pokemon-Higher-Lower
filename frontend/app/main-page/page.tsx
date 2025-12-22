@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Card } from "./types";
-import { CardView } from "./CardView";
-import { GuessControls } from "./GuessControls";
+import { CardView } from "../CardView";
+import { GuessControls } from "../GuessControls";
+import type { Card } from "../types";
 
 export default function HomePage() {
   const [leftCard, setLeftCard] = useState<Card | null>(null);
@@ -115,39 +115,39 @@ export default function HomePage() {
 
   return (
     <main className="gradient-hero overflow-hidden flex min-h-screen items-center justify-center px-4 py-10">
-      <div className="w-full max-w-4xl">
-        <header className="mb-8 text-center">
-          <h1 className="text-3xl font-semibold tracking-tight">
+      <div className="w-full max-w-5xl">
+        <header className="mb-10 text-center">
+          <h1 className="text-5xl md:text-6xl text-white font-black">
             Pokémon Higher / Lower
           </h1>
-          <p className="mt-2 text-sm text-zinc-600">
+          <p className="mt-3 text-lg text-muted-foreground max-w-2xl mx-auto">
             Is the card on the right worth more or less than the one on the
             left?
           </p>
         </header>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-sm text-rose-700">
+          <div className="mb-4 rounded-2xl border border-rose-300/40 bg-rose-500/10 px-4 py-3 text-sm text-rose-100 backdrop-blur">
             {error}
           </div>
         )}
 
         <div className="flex flex-col gap-6 md:flex-row md:items-stretch">
           <section className="flex-1">
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-              <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-zinc-500">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+              <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-white/70">
                 Current card
               </p>
               <div className={isMovingCard ? "card-fade-out" : ""}>
                 <CardView card={leftCard} showPrice />
               </div>
             </div>
-            <p className="mt-2 text-xl text-zinc-600">Score: {score}</p>
+            <p className="mt-3 text-xl text-white/80">Score: {score}</p>
           </section>
 
           <section className="flex flex-1 flex-col gap-4">
-            <div className="rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-              <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-zinc-500">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4 backdrop-blur">
+              <p className="mb-3 text-xs font-medium uppercase tracking-[0.25em] text-white/70">
                 Next card
               </p>
               <div

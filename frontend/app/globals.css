@@ -27,6 +27,12 @@
     );
     --muted-foreground: 222 20% 60%;
   }
+  html,
+  body {
+    background: hsl(222 47% 8%);
+    overflow-x: hidden;
+    overscroll-behavior: none;
+  }
 }
 
 @layer utilities {
