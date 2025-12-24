@@ -1,6 +1,7 @@
 import { Zap } from "lucide-react";
 import { Button } from "@/app/components/button";
 import Link from "next/link";
+import Header from "./components/Header";
 const featureCardData = [
   {
     key: "1",
@@ -18,9 +19,7 @@ const featureCardData = [
 export default function HomePage() {
   return (
     <div className="min-h-screen gradient-hero relative overflow-hidden">
-      <header className="bg-white/5 backdrop-blur p-6 mb-12 rounded-b-3xl shadow-md">
-        <div className="text-primary">HELLO</div>
-      </header>
+      <Header />
       {/* Background decoration elements */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/40 rounded-full blur-3xl animate-pulse" />
