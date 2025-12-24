@@ -1,4 +1,4 @@
-import type { Card } from "@/app/types";
+import type { Card } from "@/features/game/types";
 
 export async function fetchRandomCard(signal: AbortSignal): Promise<Card> {
   const res = await fetch("http://localhost:8080/cards/randomCard", {

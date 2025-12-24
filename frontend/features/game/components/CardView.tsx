@@ -1,5 +1,5 @@
 import type { Card } from "./types";
-import { Tooltip } from "./tooltip";
+import { Tooltip } from "@/components/Tooltip";
 type CardViewProps = {
   card: Card | null;
   showPrice: boolean;

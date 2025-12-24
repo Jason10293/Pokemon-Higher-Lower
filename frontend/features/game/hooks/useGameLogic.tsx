@@ -1,6 +1,6 @@
 import { useEffect, useReducer, useRef } from "react";
-import type { Card, GameLogic } from "@/app/types";
-import { fetchRandomCard, fetchTwoDifferentCards } from "../api/cards";
+import type { Card, GameLogic } from "@/features/game/types";
+import { fetchRandomCard, fetchTwoDifferentCards } from "@/app/gamepage/api/cards";
 
 type GameState = Omit<GameLogic, "handleGuess">;
 
