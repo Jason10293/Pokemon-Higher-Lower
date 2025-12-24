@@ -19,22 +19,22 @@ const featureCardData = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen gradient-hero relative overflow-hidden">
+    <div className="gradient-hero relative min-h-screen overflow-hidden">
       <Header />
       {/* Background decoration elements */}
       <PulsingDecoration />
 
       {/* Hero Section Text + CTA */}
-      <div className="flex flex-col items-center my-6 pt-12">
-        <p className="text-7xl text-white font-black mt-6">Higher or</p>
-        <p className="text-7xl text-primary font-black">Lower?</p>
+      <div className="my-6 flex flex-col items-center pt-12">
+        <p className="mt-6 text-7xl font-black text-white">Higher or</p>
+        <p className="text-primary text-7xl font-black">Lower?</p>
 
-        <p className="text-lg md:text-xl text-muted-foreground mb-10 max-w-lg mx-auto text-center mt-4">
+        <p className="text-muted-foreground mx-auto mt-4 mb-10 max-w-lg text-center text-lg md:text-xl">
           Test your Pokemon knowledge by guessing which card is more expensive!
         </p>
         <Link href="/gamepage">
           <Button variant="hero" size="xl" className="group">
-            <Zap className="w-6 h-6 mr-2" />
+            <Zap className="mr-2 h-6 w-6" />
             Start Playing!
           </Button>
         </Link>
@@ -42,14 +42,14 @@ export default function HomePage() {
 
       {/* Feature Cards */}
       <div className="mt-20 px-6 pb-12">
-        <div className="mx-auto max-w-4xl grid gap-6 md:grid-cols-3 text-center">
+        <div className="mx-auto grid max-w-4xl gap-6 text-center md:grid-cols-3">
           {featureCardData.map((card) => (
             <div
               key={card.key}
               className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur"
             >
               <p className="text-2xl font-bold text-white">{card.title}</p>
-              <p className="text-sm text-muted-foreground mt-2">
+              <p className="text-muted-foreground mt-2 text-sm">
                 {card.description}
               </p>
             </div>

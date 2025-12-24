@@ -30,7 +30,7 @@ frontend/.vercel/
 frontend/.turbo/
 frontend/package-lock.json
 frontend/yarn.lock
-
+node_modules/prettier/
 # Next.js build artifacts
 .next/
 out/

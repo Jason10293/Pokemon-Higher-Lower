@@ -19,7 +19,7 @@ export default function HomePage() {
         <section className="flex flex-1 flex-col items-center">
           <CardPanel
             label="Current card"
-            className="w-full max-w-sm min-h-[420px]"
+            className="min-h-[420px] w-full max-w-sm"
           >
             <div className={game.isMovingCard ? "card-fade-out" : ""}>
               <CardView card={game.leftCard} showPrice />
@@ -31,20 +31,18 @@ export default function HomePage() {
         <section className="flex flex-1 flex-col items-center gap-4">
           <CardPanel
             label="Next card"
-            className="w-full max-w-sm min-h-[420px]"
+            className="min-h-[420px] w-full max-w-sm"
           >
             <div
               className={`${
-                game.guessed &&
-                game.result === "correct" &&
-                !game.isMovingCard
+                game.guessed && game.result === "correct" && !game.isMovingCard
                   ? "card-correct"
                   : ""
               }${
                 game.guessed && game.result === "wrong" && !game.isMovingCard
-                  ? " card-wrong"
+                  ? "card-wrong"
                   : ""
-              }${game.isMovingCard ? " card-moving-right-to-left" : ""}`}
+              }${game.isMovingCard ? "card-moving-right-to-left" : ""}`}
             >
               <CardView card={game.rightCard} showPrice={game.guessed} />
             </div>

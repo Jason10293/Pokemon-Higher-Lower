@@ -5,10 +5,10 @@ const Header = () => {
     <header className="flex justify-between p-6 px-16">
       <div className="flex flex-row items-center gap-1">
         <Sparkles className="text-primary" />
-        <p className="text-primary font-bold text-2xl">PokePrice</p>
+        <p className="text-primary text-2xl font-bold">PokePrice</p>
       </div>
       <Link href="/login">
-        <button className="flex flex-row gap-2 items-center border-2 border-primary bg-transparent text-primary hover:bg-primary font-semibold hover:text-black py-2 px-4 rounded-lg transition">
+        <button className="border-primary text-primary hover:bg-primary flex flex-row items-center gap-2 rounded-lg border-2 bg-transparent px-4 py-2 font-semibold transition hover:text-black">
           <User />
           Login/Signup
         </button>

@@ -31,7 +31,11 @@
       hsl(222 47% 10%) 100%
     );
     --muted-foreground: 222 20% 60%;
+
     --shadow-card: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 30px hsl(45 100% 51% / 0.3);
+    --shadow-button: 0 4px 20px hsl(45 100% 51% / 0.4);
+
     --border-border: 222 30% 25%;
     --muted: 222 30% 20%;
   }
@@ -55,6 +59,15 @@
   }
   .border-border {
     border-color: hsl(var(--border-border));
+  }
+  .shadow-button {
+    box-shadow: var(--shadow-button);
+  }
+  .shadow-button:hover {
+    box-shadow: var(--shadow-glow);
+  }
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
   }
 }
 

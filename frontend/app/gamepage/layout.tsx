@@ -6,7 +6,7 @@ export default function GameLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="gradient-hero overflow-hidden flex min-h-screen items-center justify-center px-4 py-10">
+    <main className="gradient-hero flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
       <div className="w-full max-w-4xl">
         <GameHeader />
         {children}
