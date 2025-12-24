@@ -2,6 +2,7 @@ import { Zap } from "lucide-react";
 import { Button } from "@/components/button";
 import Link from "next/link";
 import Header from "@/components/Header";
+import PulsingDecoration from "@/components/PulsingDecoration";
 const featureCardData = [
   {
     key: "1",
@@ -21,11 +22,7 @@ export default function HomePage() {
     <div className="min-h-screen gradient-hero relative overflow-hidden">
       <Header />
       {/* Background decoration elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 -left-32 w-96 h-96 bg-primary/40 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute top-1/2 -right-32 w-96 h-96 bg-secondary/35 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute -bottom-32 left-1/3 w-32 h-64 bg-accent/30 rounded-full blur-3xl animate-pulse" />
-      </div>
+      <PulsingDecoration />
 
       {/* Hero Section Text + CTA */}
       <div className="flex flex-col items-center my-6 pt-12">

@@ -14,7 +14,7 @@
 
   --color-accent: #e92063;
   --color-accent-text: #fffaeb;
-
+  --color-muted: hsl(var(--muted));
   --color-muted-foreground: hsl(var(--muted-foreground));
 }
 
@@ -25,7 +25,15 @@
       hsl(222 47% 12%) 0%,
       hsl(222 47% 6%) 100%
     );
+    --gradient-card: linear-gradient(
+      145deg,
+      hsl(222 47% 18%) 0%,
+      hsl(222 47% 10%) 100%
+    );
     --muted-foreground: 222 20% 60%;
+    --shadow-card: 0 10px 40px -10px hsl(0 0% 0% / 0.5);
+    --border-border: 222 30% 25%;
+    --muted: 222 30% 20%;
   }
   html,
   body {
@@ -38,6 +46,15 @@
 @layer utilities {
   .gradient-hero {
     background: var(--gradient-hero);
+  }
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+  .border-border {
+    border-color: hsl(var(--border-border));
   }
 }
 
