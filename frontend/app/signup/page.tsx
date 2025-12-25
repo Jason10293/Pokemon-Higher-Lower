@@ -17,9 +17,9 @@ export default function SignupPage() {
           </div>
           {/* Welcome Text */}
           <div className="mb-4 flex flex-col items-center gap-1">
-            <h1 className="text-2xl font-bold text-white">Welcome Back!</h1>
+            <h1 className="text-2xl font-bold text-white">Create Account</h1>
             <p className="text-muted-foreground text-sm">
-              login to continue your streak
+              Join the game and start playing!
             </p>
           </div>
           {/* Login Form */}
@@ -42,16 +42,24 @@ export default function SignupPage() {
                 className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
               />
             </div>
+            <div className="border-border focus-within:ring-primary mt-4 mb-4 flex items-center gap-3 rounded-xl border bg-black/20 px-4 py-2 text-white focus-within:ring-2">
+              <Lock className="text-muted-foreground" />
+              <input
+                type="password"
+                placeholder="Confirm your password"
+                className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
+              />
+            </div>
           </form>
           <button
             type="submit"
             className="bg-primary hover:bg-primary/90 shadow-button h-12 w-full rounded-xl px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
           >
-            Sign In
+            Create Account
           </button>
           <div className="text-muted-foreground my-5 flex w-full items-center gap-3 text-xs tracking-[0.2em] uppercase">
             <span className="h-px flex-1 bg-white/10" />
-            or continue with
+            or sign up with
             <span className="h-px flex-1 bg-white/10" />
           </div>
           <div className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black">
@@ -60,9 +68,9 @@ export default function SignupPage() {
           </div>
           <div>
             <p className="text-muted-foreground mt-4 text-sm">
-              Don't have an account?{" "}
-              <a href="/signup" className="text-primary underline">
-                Sign Up
+              Have an account?{" "}
+              <a href="/login" className="text-primary underline">
+                Login
               </a>
             </p>
           </div>

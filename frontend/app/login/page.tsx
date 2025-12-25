@@ -1,6 +1,8 @@
+"use client";
 import { Sparkles, Mail, Lock } from "lucide-react";
 import GoogleIcon from "./icons/GoogleIcon";
 import BackButton from "@/components/BackButton";
+import { motion } from "framer-motion";
 import PulsingDecoration from "@/components/PulsingDecoration";
 export default function LoginPage() {
   return (
@@ -9,6 +11,12 @@ export default function LoginPage() {
       <BackButton href="/" />
 
       <div className="relative w-full max-w-md">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="relative z-10 w-full max-w-md"
+        >
         <div className="gradient-card border-border shadow-card flex flex-col items-center rounded-2xl border p-8 text-white">
           {/* Logo and Title*/}
           <div className="bg-primary/20 border-primary mb-6 flex w-fit flex-row items-center justify-center gap-2 rounded-2xl border px-4 py-2">
@@ -67,6 +75,7 @@ export default function LoginPage() {
             </p>
           </div>
         </div>
+        </motion.div>
       </div>
     </div>
   );
