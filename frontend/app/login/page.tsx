@@ -1,10 +1,13 @@
-import { Sparkles, Mail, Lock, GiftIcon } from "lucide-react";
-import GoogleIcon from "../signup/icons/GoogleIcon";
+import { Sparkles, Mail, Lock } from "lucide-react";
+import GoogleIcon from "./icons/GoogleIcon";
+import BackButton from "@/components/BackButton";
 import PulsingDecoration from "@/components/PulsingDecoration";
 export default function LoginPage() {
   return (
     <div className="gradient-hero relative flex min-h-screen items-center justify-center overflow-hidden px-4">
       <PulsingDecoration />
+      <BackButton href="/" />
+
       <div className="relative w-full max-w-md">
         <div className="gradient-card border-border shadow-card flex flex-col items-center rounded-2xl border p-8 text-white">
           {/* Logo and Title*/}
@@ -13,7 +16,7 @@ export default function LoginPage() {
             PokePrice
           </div>
           {/* Welcome Text */}
-          <div className="flex flex-col items-center gap-4">
+          <div className="mb-4 flex flex-col items-center gap-1">
             <h1 className="text-2xl font-bold text-white">Welcome Back!</h1>
             <p className="text-muted-foreground text-sm">
               login to continue your streak
