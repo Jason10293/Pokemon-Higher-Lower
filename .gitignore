@@ -31,6 +31,7 @@ frontend/.turbo/
 frontend/package-lock.json
 frontend/yarn.lock
 node_modules/prettier/
+node_modules
 # Next.js build artifacts
 .next/
 out/
