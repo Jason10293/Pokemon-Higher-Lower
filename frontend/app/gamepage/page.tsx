@@ -7,15 +7,17 @@ import { ErrorNotice } from "@/features/game/components/ErrorNotice";
 import { ScoreDisplay } from "@/features/game/components/ScoreDisplay";
 import { useCardGame } from "@/features/game/hooks/useGameLogic";
 import type { GameLogic } from "@/features/game/types";
-
+import FloatingCards from "@/components/FloatingCards";
+import PulsingDecorations from "@/components/PulsingDecoration";
 export default function HomePage() {
   const game: GameLogic = useCardGame();
 
   return (
     <>
       {game.error && <ErrorNotice message={game.error} />}
-
       <div className="flex flex-col md:flex-row md:items-stretch">
+        <FloatingCards />
+        <PulsingDecorations />
         <section className="flex flex-1 flex-col items-center">
           <CardPanel
             label="Current card"

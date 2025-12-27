@@ -63,7 +63,7 @@ export default function HomePage() {
         transition={{ duration: 0.8 }}
       >
         <motion.p
-          className="mt-6 text-7xl font-black text-white"
+          className="text-7xl font-black text-white"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}

@@ -1,4 +1,5 @@
 import { GameHeader } from "@/features/game/components/GameHeader";
+import Header from "@/components/Header";
 
 export default function GameLayout({
   children,
@@ -6,10 +7,13 @@ export default function GameLayout({
   children: React.ReactNode;
 }) {
   return (
-    <main className="gradient-hero flex min-h-screen items-center justify-center overflow-hidden px-4 py-10">
-      <div className="w-full max-w-4xl">
-        <GameHeader />
-        {children}
+    <main className="gradient-hero relative flex min-h-screen flex-col overflow-hidden">
+      <Header />
+      <div className="flex flex-1 items-center justify-center px-4">
+        <div className="w-full max-w-4xl">
+          <GameHeader />
+          {children}
+        </div>
       </div>
     </main>
   );
