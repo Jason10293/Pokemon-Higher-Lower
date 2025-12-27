@@ -26,6 +26,18 @@ export default function LoginPage() {
       console.log("Login successful!", data);
     }
   };
+
+  const handleGoogleLogin = async () => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/gamepage`,
+      },
+    });
+    if (error) {
+      console.log("Error logging in with Google:", error.message);
+    }
+  };
   return (
     <div className="gradient-hero relative flex min-h-screen flex-col overflow-hidden">
       <PulsingDecoration />
@@ -88,7 +100,9 @@ export default function LoginPage() {
               </div>
               <div className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black">
                 <GoogleIcon />
-                <button className="font-semibold">Google</button>
+                <button className="font-semibold" onClick={handleGoogleLogin}>
+                  Google
+                </button>
               </div>
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">
