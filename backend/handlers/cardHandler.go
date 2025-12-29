@@ -2,11 +2,9 @@ package handlers
 
 import (
 	"encoding/json"
-	"io"
 	"log"
 	"math/rand"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/Jason10293/Pokemon-Higher-Lower/backend/types"
@@ -20,63 +18,6 @@ type CardHandler struct {
 
 func NewCardHandler(db *supabase.Client) *CardHandler {
 	return &CardHandler{db: db}
-}
-
-func (h *CardHandler) FetchCardById(w http.ResponseWriter, r *http.Request) {
-	pokemonTCGApiKey := os.Getenv("POKEMON_TCG_API_KEY")
-	id := chi.URLParam(r, "id")
-	url := "https://api.pokemontcg.io/v2/cards/" + id
-	client := &http.Client{}
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		http.Error(w, "failed to create request", http.StatusInternalServerError)
-		return
-	}
-	req.Header.Set("X-Api-Key", pokemonTCGApiKey)
-
-	resp, err := client.Do(req)
-	if err != nil {
-		http.Error(w, "failed to fetch data", http.StatusInternalServerError)
-		return
-	}
-
-	defer resp.Body.Close()
-
-	// If the upstream API did not return 200, forward the status and body for easier debugging
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		log.Printf("Upstream error for card %s: status=%d body=%s", id, resp.StatusCode, string(body))
-		http.Error(w, http.StatusText(http.StatusBadGateway), http.StatusBadGateway)
-		return
-	}
-
-	var data types.CardResponse
-	if err := json.NewDecoder(resp.Body).Decode(&data); err != nil {
-		http.Error(w, "failed to decode data", http.StatusInternalServerError)
-		return
-	}
-
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-
-	// Shape the response to what the frontend expects
-	type cardOut struct {
-		Title        string  `json:"title"`
-		AveragePrice float64 `json:"averagePrice"`
-		Image        string  `json:"image"`
-	}
-	out := cardOut{
-		Title: data.Data.Name,
-		Image: data.Data.Images.Small,
-	}
-	// Best-effort extraction of price; default to 0 if missing
-	out.AveragePrice = data.Data.TCGPlayer.Prices.Holofoil.Mid
-
-	if err := json.NewEncoder(w).Encode(out); err != nil {
-		log.Printf("Error encoding response for card %s: %v", id, err)
-		http.Error(w, "failed to encode data", http.StatusInternalServerError)
-		return
-	}
 }
 
 // GetRandomCard returns a single random card from the Supabase "cards" table.
@@ -158,7 +99,6 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 func CardRoutes(db *supabase.Client) chi.Router {
 	r := chi.NewRouter()
 	cardHandler := NewCardHandler(db)
-	r.Get("/fetch/{id}", cardHandler.FetchCardById)
 	r.Get("/randomCard", cardHandler.GetRandomCard)
 	return r
 }
