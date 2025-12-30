@@ -27,7 +27,7 @@ export function CardView({ card, showPrice }: CardViewProps) {
       </div>
       <div className="space-y-1 text-center">
         <div className="flex items-center gap-2">
-          <p className="line-clamp-1 text-sm font-medium text-zinc-900">
+          <p className="line-clamp-1 text-sm font-medium text-white">
             {card.name}
           </p>
           <Tooltip content={`Set: ${card.setName}`}></Tooltip>

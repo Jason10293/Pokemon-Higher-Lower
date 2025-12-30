@@ -42,7 +42,6 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 	if len(bsCount) > 0 {
 		log.Printf("raw count response: %s", string(bsCount))
 	}
-	log.Printf("cards count: %d", count)
 	if count <= 0 {
 		http.Error(w, "no cards available", http.StatusNotFound)
 		return

@@ -7,14 +7,16 @@ import { motion } from "framer-motion";
 import { supabase } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import Header from "@/components/Header";
+import Link from "next/link";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     if (password !== confirmPassword) {
       console.log("Passwords do not match");
       return;
@@ -59,12 +61,17 @@ export default function SignupPage() {
                 </p>
               </div>
               {/* Login Form */}
-              <form className="w-full" onSubmit={handleSubmit}>
+              <form
+                className="w-full"
+                onSubmit={handleSubmit}
+                autoComplete="off"
+              >
                 {/*Email input field*/}
                 <div className="border-border focus-within:ring-primary mt-6 flex items-center gap-3 rounded-xl border bg-black/20 px-4 py-2 text-white focus-within:ring-2">
                   <Mail className="text-muted-foreground" />
                   <input
                     type="email"
+                    autoComplete="off"
                     placeholder="Enter your email"
                     className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
                     onChange={(e) => setEmail(e.target.value)}
@@ -75,6 +82,7 @@ export default function SignupPage() {
                   <Lock className="text-muted-foreground" />
                   <input
                     type="password"
+                    autoComplete="new-password"
                     placeholder="Enter your password"
                     className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
                     onChange={(e) => setPassword(e.target.value)}
@@ -84,6 +92,7 @@ export default function SignupPage() {
                   <Lock className="text-muted-foreground" />
                   <input
                     type="password"
+                    autoComplete="off"
                     placeholder="Confirm your password"
                     className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
                     onChange={(e) => setConfirmPassword(e.target.value)}
@@ -93,7 +102,7 @@ export default function SignupPage() {
                   type="submit"
                   className="bg-primary hover:bg-primary/90 shadow-button h-12 w-full rounded-xl px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
                 >
-                  Create Account
+                  {loading ? "Signing up..." : "Sign Up"}
                 </button>
               </form>
               <div className="text-muted-foreground my-5 flex w-full items-center gap-3 text-xs tracking-[0.2em] uppercase">
@@ -108,9 +117,9 @@ export default function SignupPage() {
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">
                   Have an account?{" "}
-                  <a href="/login" className="text-primary underline">
+                  <Link href="/login" className="text-primary underline">
                     Login
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

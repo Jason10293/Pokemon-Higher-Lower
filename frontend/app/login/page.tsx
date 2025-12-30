@@ -7,14 +7,16 @@ import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
 import { supabase } from "@/utils/supabase/client";
 import PulsingDecoration from "@/components/PulsingDecoration";
-import Header from "@/components/Header";
+import Link from "next/link";
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -65,12 +67,18 @@ export default function LoginPage() {
                 </p>
               </div>
               {/* Login Form */}
-              <form className="w-full" onSubmit={handleLogin}>
+              <form className="w-full" onSubmit={handleLogin} autoComplete="on">
                 {/*Email input field*/}
                 <div className="border-border focus-within:ring-primary mt-6 flex items-center gap-3 rounded-xl border bg-black/20 px-4 py-2 text-white focus-within:ring-2">
                   <Mail className="text-muted-foreground" />
+                  <label htmlFor="email" className="sr-only">
+                    Email
+                  </label>
                   <input
+                    id="email"
+                    name="email"
                     type="email"
+                    autoComplete="username"
                     placeholder="Enter your email"
                     className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
                     onChange={(e) => setEmail(e.target.value)}
@@ -79,8 +87,14 @@ export default function LoginPage() {
                 {/* Password Input */}
                 <div className="border-border focus-within:ring-primary mt-4 mb-4 flex items-center gap-3 rounded-xl border bg-black/20 px-4 py-2 text-white focus-within:ring-2">
                   <Lock className="text-muted-foreground" />
+                  <label htmlFor="password" className="sr-only">
+                    Password
+                  </label>
                   <input
+                    id="password"
+                    name="password"
                     type="password"
+                    autoComplete="current-password"
                     placeholder="Enter your password"
                     className="placeholder:text-muted-foreground w-full bg-transparent text-white focus:outline-none"
                     onChange={(e) => setPassword(e.target.value)}
@@ -88,9 +102,10 @@ export default function LoginPage() {
                 </div>
                 <button
                   type="submit"
+                  disabled={loading}
                   className="bg-primary hover:bg-primary/90 shadow-button h-12 w-full rounded-xl px-4 py-2 font-bold text-white transition-all duration-300 hover:scale-105"
                 >
-                  Sign In
+                  {loading ? "Logging in..." : "Login"}
                 </button>
               </form>
               <div className="text-muted-foreground my-5 flex w-full items-center gap-3 text-xs tracking-[0.2em] uppercase">
@@ -107,9 +122,9 @@ export default function LoginPage() {
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">
                   Don't have an account?{" "}
-                  <a href="/signup" className="text-primary underline">
+                  <Link href="/signup" className="text-primary underline">
                     Sign Up
-                  </a>
+                  </Link>
                 </p>
               </div>
             </div>

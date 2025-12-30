@@ -16,11 +16,12 @@ const ProfileButton = () => {
   }, []);
 
   return (
-    <Link href="/profile">
-      <button className="hover:bg-muted flex cursor-pointer flex-row gap-2 rounded-2xl bg-transparent px-4 py-2 transition-all duration-300">
-        <User className="text-white" />
-        <div className="font-semibold text-white">{userEmail}</div>
-      </button>
+    <Link
+      href="/profile"
+      className="hover:bg-muted flex cursor-pointer flex-row gap-2 rounded-2xl bg-transparent px-4 py-2 transition-all duration-300"
+    >
+      <User className="text-white" />
+      <div className="font-semibold text-white">{userEmail}</div>
     </Link>
   );
 };

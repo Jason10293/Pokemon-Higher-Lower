@@ -10,17 +10,18 @@ const Header = () => {
       <>
         <Link href="/" className="flex flex-row items-center gap-1">
           <Sparkles className="text-primary" />
-          <p className="text-primary text-2xl font-bold">PokePrice</p>
+          <h1 className="text-primary text-2xl font-bold">PokePrice</h1>
         </Link>
       </>
       {isLoggedIn ? (
         <ProfileButton />
       ) : (
-        <Link href="/login">
-          <button className="border-primary text-primary hover:bg-primary flex flex-row items-center gap-2 rounded-lg border-2 bg-transparent px-4 py-2 font-semibold transition hover:text-black">
-            <User />
-            Login/Signup
-          </button>
+        <Link
+          href="/login"
+          className="border-primary text-primary hover:bg-primary flex flex-row items-center gap-2 rounded-lg border-2 bg-transparent px-4 py-2 font-semibold transition hover:text-black"
+        >
+          <User />
+          Login/Signup
         </Link>
       )}
     </header>
