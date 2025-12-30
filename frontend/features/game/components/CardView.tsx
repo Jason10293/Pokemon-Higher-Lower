@@ -1,4 +1,4 @@
-import type { Card } from "./types";
+import type { Card } from "../types";
 import { Tooltip } from "@/components/Tooltip";
 type CardViewProps = {
   card: Card | null;
@@ -27,7 +27,7 @@ export function CardView({ card, showPrice }: CardViewProps) {
       </div>
       <div className="space-y-1 text-center">
         <div className="flex items-center gap-2">
-          <p className="text-sm font-medium text-zinc-900 line-clamp-1">
+          <p className="line-clamp-1 text-sm font-medium text-zinc-900">
             {card.name}
           </p>
           <Tooltip content={`Set: ${card.setName}`}></Tooltip>
