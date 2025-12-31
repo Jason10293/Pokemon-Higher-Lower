@@ -139,6 +139,36 @@
   animation: card-fade-out-frames 0.5s ease-in-out;
 }
 
+@keyframes tab-slide-left {
+  0% {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes tab-slide-right {
+  0% {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.tab-content[data-state="active"][data-direction="left"] {
+  animation: tab-slide-left 0.22s ease-out;
+}
+
+.tab-content[data-state="active"][data-direction="right"] {
+  animation: tab-slide-right 0.22s ease-out;
+}
+
 *,
 *::before,
 *::after {

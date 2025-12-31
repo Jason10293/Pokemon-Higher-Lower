@@ -43,7 +43,9 @@ export default function LoginPage() {
   return (
     <div className="gradient-hero relative flex min-h-screen flex-col overflow-hidden">
       <PulsingDecoration />
-      <BackButton href="/" />
+      <div className="absolute top-6 left-6">
+        <BackButton href="/" text="Back" />
+      </div>
 
       <div className="flex flex-1 items-center justify-center px-4">
         <div className="relative w-full max-w-md">

@@ -2,7 +2,7 @@
 import { Sparkles, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/app/providers/auth-provider";
-import ProfileButton from "./ProfileButton";
+import SettingsButton from "./SettingsButton";
 const Header = () => {
   const { isLoggedIn, isLoading } = useAuth();
   return (
@@ -14,7 +14,7 @@ const Header = () => {
         </Link>
       </>
       {isLoggedIn ? (
-        <ProfileButton />
+        <SettingsButton />
       ) : (
         <Link
           href="/login"
