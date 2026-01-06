@@ -7,12 +7,18 @@ import Link from "next/link";
 
 const SettingsButton = () => {
   const [userEmail, setUserEmail] = useState<string | null>("");
+  const [displayName, setDisplayName] = useState<string | null>("");
+  const [avatarUrl, setAvatarUrl] = useState<string | null>("");
+  const DEFAULT_AVATAR_URL =
+    "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png";
   useEffect(() => {
     const getUserEmail = async () => {
       const {
         data: { user },
       } = await supabase.auth.getUser();
       setUserEmail(user?.email?.split("@")[0] ?? null);
+      setDisplayName(user?.user_metadata.display_name ?? null);
+      setAvatarUrl(user?.user_metadata.avatar_url ?? null);
     };
     getUserEmail();
   }, []);
@@ -22,14 +28,26 @@ const SettingsButton = () => {
   };
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="hover:bg-muted flex items-center gap-2 rounded-2xl bg-transparent px-4 py-2 transition-all duration-300"
+          className="flex items-center gap-2 rounded-2xl bg-transparent px-4 py-2 transition-all duration-300 hover:cursor-pointer hover:bg-white/10"
         >
-          <User className="text-white" />
-          <span className="font-medium text-white">{userEmail}</span>
+          {avatarUrl ? (
+            <span className="h-12 w-12 overflow-hidden rounded-full">
+              <img
+                src={avatarUrl || DEFAULT_AVATAR_URL}
+                alt="Avatar"
+                className="h-full w-full scale-110 object-cover"
+              />
+            </span>
+          ) : (
+            <User className="text-white" />
+          )}
+          <span className="font-medium text-white">
+            {displayName || userEmail}
+          </span>
         </button>
       </DropdownMenu.Trigger>
 

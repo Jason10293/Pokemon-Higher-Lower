@@ -8,6 +8,7 @@ import { supabase } from "@/utils/supabase/client";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { getDisplayName } from "next/dist/shared/lib/utils";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -24,6 +25,13 @@ export default function SignupPage() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: {
+          display_name: email.split("@")[0],
+          avatar_url:
+            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
+        },
+      },
     });
     if (error) {
       console.log("Error signing up:", error.message);

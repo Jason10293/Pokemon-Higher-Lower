@@ -5,7 +5,7 @@ export default function Dropdown() {
     "relative flex cursor-default select-none items-center rounded-sm px-4 py-2 text-sm outline-none transition-colors focus:bg-slate-50 data-[disabled]:pointer-events-none data-[disabled]:opacity-50";
 
   return (
-    <DropdownMenu.Root>
+    <DropdownMenu.Root modal={false}>
       <DropdownMenu.Trigger className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-300 bg-white whitespace-nowrap text-slate-500 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-600 focus-visible:ring-1 focus-visible:ring-slate-300 focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50">
         <svg
           className="fill-current"

@@ -3,8 +3,9 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
-import { useState } from "react";
-
+import { useEffect, useState } from "react";
+import { supabase } from "@/utils/supabase/client";
+import { toast } from "sonner";
 const AVATAR_URLS = [
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", // Pikachu
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", // Bulbasaur
@@ -19,8 +20,44 @@ const AVATAR_URLS = [
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/9.png", // Blastoise
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/3.png", // Venusaur
 ];
+
 const SettingsPage = () => {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [displayName, setDisplayName] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Handle form submission logic here
+    setLoading(true);
+    const { data, error } = await supabase.auth.updateUser({
+      data: {
+        display_name: displayName,
+        avatar_url: avatarUrl,
+      },
+    });
+    console.log("Profile saved!", data, error);
+    setTimeout(() => {
+      setLoading(false);
+    }, 500);
+    if (error) {
+      toast.error("Error saving profile: " + error.message);
+      return;
+    }
+    toast.success("Profile saved successfully!");
+  };
+
+  const getUserProfile = async () => {
+    const { data } = await supabase.auth.getUser();
+    const metadata = data.user?.user_metadata;
+    setDisplayName(metadata?.display_name || "");
+    setAvatarUrl(metadata?.avatar_url || null);
+  };
+
+  // Fetch user profile on component mount
+  useEffect(() => {
+    getUserProfile();
+  }, []);
   return (
     <main>
       <div className="gradient-hero relative min-h-screen overflow-hidden">
@@ -34,13 +71,13 @@ const SettingsPage = () => {
             <Tabs.List className="flex w-full gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
               <Tabs.Trigger
                 value="profile"
-                className="data-[state=active]:bg-primary-text flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition data-[state=active]:text-white"
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Profile
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="settings"
-                className="data-[state=active]:bg-primary-text flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition data-[state=active]:text-white"
+                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
               >
                 Settings
               </Tabs.Trigger>
@@ -71,6 +108,8 @@ const SettingsPage = () => {
                 <input
                   type="text"
                   placeholder="Enter your display name"
+                  value={displayName}
+                  onChange={(e) => setDisplayName(e.target.value)}
                   className="focus:border-primary focus:ring-primary mt-2 w-full rounded-xl border border-white/20 bg-white/5 px-4 py-2 text-white placeholder:text-white/40 focus:ring-2 focus:outline-none"
                 />
               </div>
@@ -100,9 +139,18 @@ const SettingsPage = () => {
                 </div>
                 <button
                   type="submit"
-                  className="bg-primary hover:bg-primary/90 shadow-button mt-3 h-11 w-full rounded-2xl px-4 py-2 font-semibold text-black transition-all duration-300 hover:scale-105"
+                  onClick={handleSubmit}
+                  disabled={loading}
+                  className="bg-primary hover:bg-primary/90 shadow-button mt-3 flex h-11 w-full items-center justify-center gap-2 rounded-2xl px-4 py-2 font-semibold text-black transition-all duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-70"
                 >
-                  Save Profile
+                  {loading ? (
+                    <>
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-black/30 border-t-black" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Profile"
+                  )}
                 </button>
               </div>
             </Tabs.Content>
