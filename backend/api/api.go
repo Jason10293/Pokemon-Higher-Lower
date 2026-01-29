@@ -7,18 +7,18 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
-	"github.com/supabase-community/supabase-go"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type APIServer struct {
 	addr string
-	DB   *supabase.Client
+	DB   *pgxpool.Pool
 }
 
-func NewAPIServer(addr string, dbClient *supabase.Client) *APIServer {
+func NewAPIServer(addr string, db *pgxpool.Pool) *APIServer {
 	return &APIServer{
 		addr: addr,
-		DB:   dbClient,
+		DB:   db,
 	}
 }
 
@@ -27,12 +27,12 @@ func (s *APIServer) Start() error {
 	r.Use(middleware.Logger)
 
 	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // your Next.js dev server
+		AllowedOrigins:   []string{"http://localhost:3000"},
 		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type"},
 		AllowCredentials: true,
 	}))
 
-    r.Mount("/cards", handlers.CardRoutes(s.DB))
-    return http.ListenAndServe(":8080", r)
+	r.Mount("/cards", handlers.CardRoutes(s.DB))
+	return http.ListenAndServe(":8080", r)
 }

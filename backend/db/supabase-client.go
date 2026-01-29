@@ -1,15 +1,22 @@
 package db
 
 import (
-	"log"
+	"context"
+	"fmt"
 
-	"github.com/supabase-community/supabase-go"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewSupabaseClient(API_URL, API_KEY string) *supabase.Client {
-	client, err := supabase.NewClient(API_URL, API_KEY, nil)
+func NewPostgresPool(databaseURL string) (*pgxpool.Pool, error) {
+	pool, err := pgxpool.New(context.Background(), databaseURL)
 	if err != nil {
-		log.Fatal("Error starting supabase")
+		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
-	return client
+
+	if err := pool.Ping(context.Background()); err != nil {
+		pool.Close()
+		return nil, fmt.Errorf("unable to ping database: %w", err)
+	}
+
+	return pool, nil
 }
