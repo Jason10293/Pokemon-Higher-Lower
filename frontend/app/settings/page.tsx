@@ -4,7 +4,7 @@ import * as Tabs from "@radix-ui/react-tabs";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
 import { useEffect, useState } from "react";
-import { supabase } from "@/utils/supabase/client";
+import { useSession } from "next-auth/react";
 import { toast } from "sonner";
 const AVATAR_URLS = [
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", // Pikachu
@@ -22,42 +22,43 @@ const AVATAR_URLS = [
 ];
 
 const SettingsPage = () => {
+  const { data: session, update } = useSession();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [displayName, setDisplayName] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle form submission logic here
     setLoading(true);
-    const { data, error } = await supabase.auth.updateUser({
-      data: {
-        display_name: displayName,
-        avatar_url: avatarUrl,
-      },
+
+    const res = await fetch("/api/profile", {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ displayName, avatarUrl }),
     });
-    console.log("Profile saved!", data, error);
+
     setTimeout(() => {
       setLoading(false);
     }, 500);
-    if (error) {
-      toast.error("Error saving profile: " + error.message);
+
+    if (!res.ok) {
+      const data = await res.json();
+      toast.error("Error saving profile: " + data.error);
       return;
     }
+
+    await update({ displayName, avatarUrl });
     toast.success("Profile saved successfully!");
   };
 
-  const getUserProfile = async () => {
-    const { data } = await supabase.auth.getUser();
-    const metadata = data.user?.user_metadata;
-    setDisplayName(metadata?.display_name || "");
-    setAvatarUrl(metadata?.avatar_url || null);
-  };
-
-  // Fetch user profile on component mount
   useEffect(() => {
-    getUserProfile();
-  }, []);
+    const user = session?.user as Record<string, string> | undefined;
+    if (user) {
+      setDisplayName(user.displayName || "");
+      setAvatarUrl(user.avatarUrl || null);
+    }
+  }, [session]);
+
   return (
     <main>
       <div className="gradient-hero relative min-h-screen overflow-hidden">

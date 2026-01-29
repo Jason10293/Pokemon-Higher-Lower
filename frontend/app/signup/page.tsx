@@ -3,12 +3,11 @@ import { Sparkles, Mail, Lock } from "lucide-react";
 import GoogleIcon from "../login/icons/GoogleIcon";
 import BackButton from "@/components/BackButton";
 import PulsingDecoration from "@/components/PulsingDecoration";
-import { motion } from "framer-motion";
-import { supabase } from "@/utils/supabase/client";
+import { motion } from "motion/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { getDisplayName } from "next/dist/shared/lib/utils";
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -20,26 +19,41 @@ export default function SignupPage() {
     setLoading(true);
     if (password !== confirmPassword) {
       console.log("Passwords do not match");
+      setLoading(false);
       return;
     }
-    const { data, error } = await supabase.auth.signUp({
+
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    if (!res.ok) {
+      const data = await res.json();
+      console.log("Error signing up:", data.error);
+      setLoading(false);
+      return;
+    }
+
+    const result = await signIn("credentials", {
       email,
       password,
-      options: {
-        data: {
-          display_name: email.split("@")[0],
-          avatar_url:
-            "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png",
-        },
-      },
+      redirect: false,
     });
-    if (error) {
-      console.log("Error signing up:", error.message);
+
+    if (result?.error) {
+      console.log("Error logging in after signup:", result.error);
+      setLoading(false);
     } else {
       router.push("/gamepage");
-      console.log("Signup successful!", data);
     }
   };
+
+  const handleGoogleSignup = async () => {
+    await signIn("google", { callbackUrl: "/gamepage" });
+  };
+
   return (
     <div className="gradient-hero relative flex min-h-screen flex-col overflow-hidden">
       <PulsingDecoration />
@@ -118,9 +132,12 @@ export default function SignupPage() {
                 or sign up with
                 <span className="h-px flex-1 bg-white/10" />
               </div>
-              <div className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black">
+              <div
+                onClick={handleGoogleSignup}
+                className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black"
+              >
                 <GoogleIcon />
-                <button className="font-semibold">Google</button>
+                <span className="font-semibold">Google</span>
               </div>
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">

@@ -5,7 +5,7 @@ import GoogleIcon from "./icons/GoogleIcon";
 import BackButton from "@/components/BackButton";
 import { useRouter } from "next/navigation";
 import { motion } from "motion/react";
-import { supabase } from "@/utils/supabase/client";
+import { signIn } from "next-auth/react";
 import PulsingDecoration from "@/components/PulsingDecoration";
 import Link from "next/link";
 export default function LoginPage() {
@@ -17,28 +17,21 @@ export default function LoginPage() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const result = await signIn("credentials", {
       email,
       password,
+      redirect: false,
     });
-    if (error) {
-      console.log("Error logging in:", error.message);
+    if (result?.error) {
+      console.log("Error logging in:", result.error);
+      setLoading(false);
     } else {
       router.push("/gamepage");
-      console.log("Login successful!", data);
     }
   };
 
   const handleGoogleLogin = async () => {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-      provider: "google",
-      options: {
-        redirectTo: `${window.location.origin}/gamepage`,
-      },
-    });
-    if (error) {
-      console.log("Error logging in with Google:", error.message);
-    }
+    await signIn("google", { callbackUrl: "/gamepage" });
   };
   return (
     <div className="gradient-hero relative flex min-h-screen flex-col overflow-hidden">

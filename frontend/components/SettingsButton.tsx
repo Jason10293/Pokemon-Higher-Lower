@@ -1,30 +1,21 @@
 import React from "react";
-import { useState, useEffect } from "react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { User, Settings, LogOut } from "lucide-react";
-import { supabase } from "@/utils/supabase/client";
+import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
 
 const SettingsButton = () => {
-  const [userEmail, setUserEmail] = useState<string | null>("");
-  const [displayName, setDisplayName] = useState<string | null>("");
-  const [avatarUrl, setAvatarUrl] = useState<string | null>("");
+  const { data: session } = useSession();
   const DEFAULT_AVATAR_URL =
     "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png";
-  useEffect(() => {
-    const getUserEmail = async () => {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      setUserEmail(user?.email?.split("@")[0] ?? null);
-      setDisplayName(user?.user_metadata.display_name ?? null);
-      setAvatarUrl(user?.user_metadata.avatar_url ?? null);
-    };
-    getUserEmail();
-  }, []);
+
+  const user = session?.user as Record<string, string> | undefined;
+  const displayName = user?.displayName;
+  const avatarUrl = user?.avatarUrl;
+  const userEmail = user?.email?.split("@")[0];
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await signOut();
   };
 
   return (
