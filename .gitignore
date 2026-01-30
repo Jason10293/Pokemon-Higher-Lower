@@ -74,3 +74,7 @@ docker-compose.override.yml
 *.swo
 *.sublime-project
 *.sublime-workspace
+
+
+/supabase/populate_db.go
+/supabase/cards
