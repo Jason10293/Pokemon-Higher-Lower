@@ -1,13 +1,14 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/joho/godotenv"
-	"github.com/supabase-community/supabase-go"
 )
 
 type Card struct {
@@ -39,22 +40,17 @@ type Response struct {
 }
 
 func fetchPage(page int) ([]Card, error) {
-	// Read API key from environment variable
 	apiKey := os.Getenv("POKEMON_TCG_API_KEY")
 
-	// Construct the API URL with pagination
 	url := fmt.Sprintf("https://api.pokemontcg.io/v2/cards?page=%d&pageSize=250", page)
 
-	// 	 a new HTTP request
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	// Set the API key in the request header
 	req.Header.Set("X-Api-Key", apiKey)
 
-	// Perform the HTTP request
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
@@ -62,12 +58,10 @@ func fetchPage(page int) ([]Card, error) {
 	}
 	defer resp.Body.Close()
 
-	// Check for non-200 status codes
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("API request failed with status code %d", resp.StatusCode)
 	}
 
-	// Decode the JSON response
 	var response Response
 	err = json.NewDecoder(resp.Body).Decode(&response)
 	if err != nil {
@@ -77,59 +71,31 @@ func fetchPage(page int) ([]Card, error) {
 	return response.Data, nil
 }
 
-func ReadFromFile(filePath string) {
-	var reponse Response
-	var cards []Card
-	data, err := os.ReadFile("output.json")
-	if err != nil {
-		fmt.Printf("Error reading file: %v\n", err)
-		return
-	}
-
-	err = json.Unmarshal(data, &reponse)
-	if err != nil {
-		fmt.Printf("Error unmarshaling JSON: %v\n", err)
-		return
-	}
-	cards = reponse.Data
-	for _, card := range cards {
-		fmt.Printf("Name: %s\n", card.Name)
-		fmt.Printf("Set Id: %s\n", card.Set.Id)
-		fmt.Printf("Set Name: %s\n", card.Set.Name)
-		fmt.Printf("Image URL: %s\n", card.Images.Small)
-		fmt.Printf("Average Sell Price: $%.2f\n", card.CardMarket.Prices.AverageSellPrice)
-		fmt.Println("-----")
-	}
-}
-
-func insertIntoDB(card Card, client *supabase.Client) {
-	_, _, err := client.From("cards").Insert(map[string]interface{}{
-		"name":      card.Name,
-		"set_id":    card.Set.Id,
-		"set_name":  card.Set.Name,
-		"image_url": card.Images.Small,
-		"price":     card.CardMarket.Prices.AverageSellPrice,
-	}, false, "", "", "").Execute()
+func insertIntoDB(ctx context.Context, card Card, conn *pgx.Conn) {
+	_, err := conn.Exec(ctx,
+		"INSERT INTO cards (name, set_id, set_name, image_url, price) VALUES ($1, $2, $3, $4, $5)",
+		card.Name, card.Set.Id, card.Set.Name, card.Images.Small, card.CardMarket.Prices.AverageSellPrice,
+	)
 	if err != nil {
 		fmt.Printf("Error inserting card %s into database: %v\n", card.Name, err)
 	} else {
 		fmt.Printf("Successfully inserted card %s into database\n", card.Name)
 	}
 }
+
 func main() {
 	if err := godotenv.Load("../.env"); err != nil {
 		fmt.Printf("Error loading .env file: %v\n", err)
 		return
 	}
-	client, err := supabase.NewClient(
-		os.Getenv("NEXT_PUBLIC_SUPABASE_URL"),
-		os.Getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY"),
-		nil,
-	)
+
+	ctx := context.Background()
+	conn, err := pgx.Connect(ctx, os.Getenv("DATABASE_URL"))
 	if err != nil {
-		fmt.Printf("Error creating Supabase client: %v\n", err)
+		fmt.Printf("Error connecting to database: %v\n", err)
 		return
 	}
+	defer conn.Close(ctx)
 
 	for page := 1; page <= 85; page++ {
 		fmt.Printf("Processing page %d\n", page)
@@ -139,8 +105,7 @@ func main() {
 			return
 		}
 		for _, card := range cards {
-			insertIntoDB(card, client)
+			insertIntoDB(ctx, card, conn)
 		}
 	}
-
 }

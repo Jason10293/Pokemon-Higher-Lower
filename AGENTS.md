@@ -2,18 +2,21 @@
 
 ## Project Structure & Module Organization
 
-- `backend/`: Go API server (`api`, `handlers`, `db`, `types`, `cmd` for entrypoints, `supabase` for local config/migrations).
-- `frontend/`: Next.js 16 app (`app` for routes/layout, `utils` for shared helpers, `globals.css` for base styles).
-- `supabase/`: Root Supabase project directory (may be empty locally); backend-specific config lives in `backend/supabase/`.
+- `backend/`: Go API server (`api`, `handlers`, `db`, `types`, `cmd` for entrypoints, `migrations` for SQL migration files).
+- `frontend/`: Next.js 16 app (`app` for routes/layout, `lib` for auth config, `utils` for shared helpers, `globals.css` for base styles).
+- `supabase/`: Data population script (`populate_db.go`) for seeding the cards table from the Pokemon TCG API.
 - `test.json` and `TODO.md`: Ad-hoc fixtures and planning notes; avoid depending on them for production behavior.
 
 ## Build, Test, and Development Commands
 
-- Backend dev: `go run ./backend/cmd` (starts the API on `:8080`).
-- Backend build: `go build ./backend/cmd`.
+- Backend dev: `cd backend && go run ./cmd` (starts the API on `:8080`).
+- Backend build: `cd backend && go build ./cmd`.
+- Backend tests: `cd backend && go test ./...`.
 - Frontend dev: `cd frontend && npm install && npm run dev` (Next.js app on `:3000`).
 - Frontend lint: `cd frontend && npm run lint`.
-- Tests: currently no automated tests. Once added, prefer `go test ./...` from the repo root and `cd frontend && npm test` (or the configured test runner).
+- Frontend build: `cd frontend && npm run build`.
+- Database: `cd backend && docker compose up -d` (PostgreSQL on `:5432`).
+- Migrations: run SQL files in `backend/migrations/` against the database.
 
 ## Coding Style & Naming Conventions
 
@@ -26,7 +29,7 @@
 
 - Backend: colocate tests with packages (e.g., `backend/handlers/cardHandler_test.go`); cover handler behavior and error paths without calling real external APIs.
 - Frontend: prefer React Testing Library and/or Playwright; place tests under `frontend/__tests__/` or next to components.
-- Mock the Pokemon TCG API and Supabase; tests should be deterministic and not depend on network or real credentials.
+- Mock external APIs; tests should be deterministic and not depend on network or real credentials.
 
 ## Commit & Pull Request Guidelines
 
@@ -36,12 +39,12 @@
 
 ## Security & Configuration Tips
 
-- Never commit real secrets. Keep `.env` files local; values like `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `POKEMON_TCG_API_KEY` must not be checked in.
-- Supabase local settings live in `backend/supabase/config.toml`; coordinate before changing ports, auth settings, or seed data.
+- Never commit real secrets. Keep `.env` files local; values like `DATABASE_URL`, `AUTH_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, and `POKEMON_TCG_API_KEY` must not be checked in.
+- Database runs via Docker Compose (`backend/docker-compose.yml`); migrations are in `backend/migrations/`.
+- Auth is handled by Auth.js (NextAuth v5) in the frontend with PostgreSQL adapter.
 
 ## Agent-Specific Instructions
 
 - Prefer minimal, targeted diffs that match existing code style and structure.
-- Avoid modifying database schema, Supabase configuration, or migrations unless explicitly requested and documented.
+- Avoid modifying database schema or migrations unless explicitly requested and documented.
 - When repository conventions are unclear, update this `AGENTS.md` with clarifications rather than guessing silently.
-

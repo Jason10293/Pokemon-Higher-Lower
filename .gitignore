@@ -58,14 +58,6 @@ backend/*.out
 *.out
 
 # ====================================
-# Supabase
-# ====================================
-supabase/.temp/
-supabase/.env
-supabase/.branches/
-supabase/.local/
-
-# ====================================
 # Docker / CI
 # ====================================
 .docker/
