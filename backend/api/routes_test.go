@@ -21,11 +21,18 @@ func TestGetRandomCardRoute(t *testing.T) {
 		fmt.Println("No .env file found")
 	}
 
-	supabaseApiKey := os.Getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
-	supabaseApiURL := os.Getenv("NEXT_PUBLIC_SUPABASE_URL")
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		t.Skip("DATABASE_URL not set, skipping integration test")
+	}
 
-	client := db.NewSupabaseClient(supabaseApiURL, supabaseApiKey)
-	handler := handlers.NewCardHandler(client)
+	pool, err := db.NewPostgresPool(databaseURL)
+	if err != nil {
+		t.Fatalf("failed to connect to database: %v", err)
+	}
+	defer pool.Close()
+
+	handler := handlers.NewCardHandler(pool)
 
 	handler.GetRandomCard(w, req)
 

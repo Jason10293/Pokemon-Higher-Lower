@@ -11,21 +11,24 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("../.env"); err != nil {
-		fmt.Println("No .env file found")
+	if err := godotenv.Load("../backend/.env"); err != nil {
+		fmt.Println("No .env file found at main")
 	}
 
-	supabaseApiKey := os.Getenv("NEXT_PUBLIC_SUPABASE_ANON_KEY")
-	supabaseApiURL := os.Getenv("NEXT_PUBLIC_SUPABASE_URL")
-	client := db.NewSupabaseClient(supabaseApiURL, supabaseApiKey)
-	if client == nil {
-		log.Fatal("Failed to create Supabase client")
+	databaseURL := os.Getenv("DATABASE_URL")
+	if databaseURL == "" {
+		log.Fatal("DATABASE_URL environment variable is required")
 	}
-	fmt.Println("Supabase client successfully created")
 
-	server := api.NewAPIServer(":8080", client)
+	pool, err := db.NewPostgresPool(databaseURL)
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+	defer pool.Close()
+	fmt.Println("PostgreSQL connection established")
+
+	server := api.NewAPIServer(":8080", pool)
 	if err := server.Start(); err != nil {
 		log.Fatal("Failed to start API server:", err)
 	}
-
 }

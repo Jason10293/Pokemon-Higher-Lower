@@ -1,46 +1,38 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"math/rand"
 	"net/http"
 	"time"
 
-	"github.com/Jason10293/Pokemon-Higher-Lower/backend/types"
 	"github.com/go-chi/chi/v5"
-	"github.com/supabase-community/supabase-go"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type CardHandler struct {
-	db *supabase.Client
+	db *pgxpool.Pool
 }
 
-func NewCardHandler(db *supabase.Client) *CardHandler {
+func NewCardHandler(db *pgxpool.Pool) *CardHandler {
 	return &CardHandler{db: db}
 }
 
-// GetRandomCard returns a single random card from the Supabase "cards" table.
+// GetRandomCard returns a single random card from the cards table.
 func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 	if h.db == nil {
 		http.Error(w, "database not configured", http.StatusInternalServerError)
 		return
 	}
 
-	// Use a HEAD request with count to retrieve total rows efficiently
-	// Capture the raw bytes too for debugging — some clients return empty
-	// body for HEAD but may include useful headers for count.
-	bsCount, count, err := h.db.From("cards").
-		Select("id", "exact", true).
-		Execute()
+	var count int
+	err := h.db.QueryRow(context.Background(), "SELECT COUNT(*) FROM cards").Scan(&count)
 	if err != nil {
 		log.Printf("failed to get cards count: %v", err)
 		http.Error(w, "failed to query database", http.StatusInternalServerError)
 		return
-	}
-	// Debug: log the raw response and count so we can see what's returned
-	if len(bsCount) > 0 {
-		log.Printf("raw count response: %s", string(bsCount))
 	}
 	if count <= 0 {
 		http.Error(w, "no cards available", http.StatusNotFound)
@@ -48,31 +40,28 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	offset := rand.Intn(int(count))
+	offset := rand.Intn(count)
 
-	// Fetch exactly one row at the random offset
-	bs, _, err := h.db.From("cards").
-		Select("*", "", false).
-		Range(offset, offset, "").
-		Execute()
+	var id int
+	var name, imageURL string
+	var setName *string
+	var price float64
+
+	err = h.db.QueryRow(context.Background(),
+		"SELECT id, name, image_url, set_name, price FROM cards OFFSET $1 LIMIT 1",
+		offset,
+	).Scan(&id, &name, &imageURL, &setName, &price)
 	if err != nil {
 		log.Printf("failed to fetch random card: %v", err)
 		http.Error(w, "failed to query database", http.StatusInternalServerError)
 		return
 	}
 
-	var rows []types.Card
-	if err := json.Unmarshal(bs, &rows); err != nil {
-		log.Printf("failed to decode random card: %v", err)
-		http.Error(w, "failed to decode data", http.StatusInternalServerError)
-		return
-	}
-	if len(rows) == 0 {
-		http.Error(w, "no card found", http.StatusNotFound)
-		return
+	setNameVal := ""
+	if setName != nil {
+		setNameVal = *setName
 	}
 
-	// Shape the response similar to FetchCardById
 	out := struct {
 		Id           int     `json:"id"`
 		Name         string  `json:"name"`
@@ -80,22 +69,21 @@ func (h *CardHandler) GetRandomCard(w http.ResponseWriter, r *http.Request) {
 		Image        string  `json:"image"`
 		SetName      string  `json:"setName"`
 	}{
-		Id:           rows[0].Id,
-		Name:         rows[0].Name,
-		AveragePrice: rows[0].Price,
-		Image:        rows[0].ImageURL,
-		SetName:      rows[0].SetName,
+		Id:           id,
+		Name:         name,
+		AveragePrice: price,
+		Image:        imageURL,
+		SetName:      setNameVal,
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	if err := json.NewEncoder(w).Encode(out); err != nil {
-		log.Printf("error encoding random card response: %v", err)
+		log.Printf("encoding random card response: %v", err)
 		http.Error(w, "failed to encode data", http.StatusInternalServerError)
-		return
 	}
 }
 
-func CardRoutes(db *supabase.Client) chi.Router {
+func CardRoutes(db *pgxpool.Pool) chi.Router {
 	r := chi.NewRouter()
 	cardHandler := NewCardHandler(db)
 	r.Get("/randomCard", cardHandler.GetRandomCard)

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"os"
-
 	"database/sql"
 	"log"
+	"os"
 
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -18,7 +17,7 @@ func main() {
 		log.Fatalf("Error loading .env file")
 	}
 
-	dbURL := os.Getenv("NEXT_PUBLIC_SUPABASE_URL")
+	dbURL := os.Getenv("DATABASE_URL")
 
 	db, err := sql.Open("postgres", dbURL)
 	if err != nil {
@@ -47,5 +46,4 @@ func main() {
 	}
 
 	log.Println("Database migrated up successfully")
-	m.Up()
 }

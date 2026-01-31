@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&display=swap");
 @import "tailwindcss";
+@import "flowbite-react/plugin/tailwindcss";
 @custom-variant dark (&:is(.dark *));
-@plugin "flowbite-react/plugin/tailwindcss";
 
 @plugin "tailwindcss-animate";
 @source "../.flowbite-react/class-list.json";
@@ -270,7 +270,6 @@ select:autofill {
   --secondary: #0da2e7;
   --secondary-foreground: #fffaeb;
   --muted: hsl(var(--muted));
-  --muted-foreground: hsl(var(--muted-foreground));
   --accent: #e92063;
   --accent-foreground: #fffaeb;
   --destructive: #ef4444;
@@ -304,7 +303,6 @@ select:autofill {
   --secondary: #0da2e7;
   --secondary-foreground: #fffaeb;
   --muted: hsl(var(--muted));
-  --muted-foreground: hsl(var(--muted-foreground));
   --accent: #e92063;
   --accent-foreground: #fffaeb;
   --destructive: #ef4444;
