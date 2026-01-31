@@ -3,9 +3,10 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import Header from "@/components/Header";
 import BackButton from "@/components/BackButton";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import Image from "next/image";
 const AVATAR_URLS = [
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", // Pikachu
   "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png", // Bulbasaur
@@ -23,8 +24,14 @@ const AVATAR_URLS = [
 
 const SettingsPage = () => {
   const { data: session, update } = useSession();
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [displayName, setDisplayName] = useState<string>("");
+  const user = session?.user as Record<string, string> | undefined;
+
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(
+    user?.avatarUrl || null,
+  );
+  const [displayName, setDisplayName] = useState<string>(
+    user?.displayName || "",
+  );
   const [loading, setLoading] = useState<boolean>(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -51,14 +58,6 @@ const SettingsPage = () => {
     toast.success("Profile saved successfully!");
   };
 
-  useEffect(() => {
-    const user = session?.user as Record<string, string> | undefined;
-    if (user) {
-      setDisplayName(user.displayName || "");
-      setAvatarUrl(user.avatarUrl || null);
-    }
-  }, [session]);
-
   return (
     <main>
       <div className="gradient-hero relative min-h-screen overflow-hidden">
@@ -72,13 +71,13 @@ const SettingsPage = () => {
             <Tabs.List className="flex w-full gap-2 rounded-2xl border border-white/10 bg-white/5 p-1">
               <Tabs.Trigger
                 value="profile"
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white"
               >
                 Profile
               </Tabs.Trigger>
               <Tabs.Trigger
                 value="settings"
-                className="flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+                className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground flex-1 rounded-xl px-4 py-2 text-sm font-semibold text-white/70 transition hover:bg-white/10 hover:text-white"
               >
                 Settings
               </Tabs.Trigger>
@@ -97,7 +96,7 @@ const SettingsPage = () => {
               </div>
               <div className="mt-4 flex flex-row items-center justify-center">
                 <div className="border-primary h-[100px] w-[100px] overflow-hidden rounded-full border-4">
-                  <img
+                  <Image
                     src={avatarUrl || AVATAR_URLS[0]}
                     alt="Avatar"
                     className="h-full w-full scale-115 rounded-xl"
@@ -130,7 +129,7 @@ const SettingsPage = () => {
                           : "border-white/20 hover:border-white/50"
                       }`}
                     >
-                      <img
+                      <Image
                         src={url}
                         alt="Avatar Option"
                         className="h-full w-full object-cover"

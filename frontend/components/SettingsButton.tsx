@@ -3,6 +3,7 @@ import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { User, Settings, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import Link from "next/link";
+import Image from "next/image";
 
 const SettingsButton = () => {
   const { data: session } = useSession();
@@ -27,7 +28,7 @@ const SettingsButton = () => {
         >
           {avatarUrl ? (
             <span className="h-12 w-12 overflow-hidden rounded-full">
-              <img
+              <Image
                 src={avatarUrl || DEFAULT_AVATAR_URL}
                 alt="Avatar"
                 className="h-full w-full scale-110 object-cover"

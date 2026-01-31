@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@/app/providers/auth-provider";
 import SettingsButton from "./SettingsButton";
 const Header = () => {
-  const { isLoggedIn, isLoading } = useAuth();
+  const { isLoggedIn } = useAuth();
   return (
     <header className="flex justify-between p-4 px-16">
       <>

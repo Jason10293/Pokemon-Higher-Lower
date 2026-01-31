@@ -1,5 +1,6 @@
 import type { Card } from "../types";
 import { Tooltip } from "@/components/Tooltip";
+import Image from "next/image";
 type CardViewProps = {
   card: Card | null;
   showPrice: boolean;
@@ -18,7 +19,7 @@ export function CardView({ card, showPrice }: CardViewProps) {
     <div className="flex flex-col items-center gap-2 overflow-hidden">
       <div className="relative h-80 w-56 overflow-hidden rounded-xl border border-zinc-300 bg-white shadow-sm">
         {card.image ? (
-          <img src={card.image} alt={card.name} className="h-full w-full" />
+          <Image src={card.image} alt={card.name} className="h-full w-full" />
         ) : (
           <div className="flex h-full w-full items-center justify-center text-xs text-zinc-400">
             No image
