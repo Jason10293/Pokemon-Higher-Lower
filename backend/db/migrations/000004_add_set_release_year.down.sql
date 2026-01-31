@@ -1,0 +1,1 @@
+ALTER TABLE cards DROP COLUMN set_release_year;
