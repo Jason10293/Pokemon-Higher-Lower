@@ -17,7 +17,7 @@ func TestGetRandomCardRoute(t *testing.T) {
 	req := httptest.NewRequest(http.MethodGet, "/randomCard", nil)
 	w := httptest.NewRecorder()
 
-	if err := godotenv.Load("../../.env"); err != nil {
+	if err := godotenv.Load("../../backend/.env"); err != nil {
 		fmt.Println("No .env file found")
 	}
 
