@@ -23,7 +23,7 @@ func NewLeaderboardHandler(db *pgxpool.Pool) *LeaderboardHandler {
 
 type LeaderboardEntry struct {
 	Rank        int       `json:"rank"`
-	UserId      string    `json:"userId"`
+	UserId      int       `json:"userId"`
 	DisplayName string    `json:"displayName"`
 	AvatarUrl   string    `json:"avatarUrl"`
 	Score       int       `json:"score"`
@@ -31,8 +31,8 @@ type LeaderboardEntry struct {
 }
 
 type userScoreResponse struct {
-	UserId string `json:"userId"`
-	Score  int    `json:"score"`
+	UserId int `json:"userId"`
+	Score  int `json:"score"`
 }
 type UserPosition struct {
 	Rank  int `json:"rank"`
@@ -42,6 +42,12 @@ type LeaderboardResponse struct {
 	LeaderboardEntries []LeaderboardEntry `json:"leaderboard"`
 	TotalEntries       int                `json:"total"`
 	UserPosition       UserPosition       `json:"userPosition"`
+}
+
+func (h *LeaderboardHandler) getTotalLeaderboardEntries(r *http.Request) (int, error) {
+	var count int
+	err := h.db.QueryRow(r.Context(), `SELECT COUNT(*) FROM leaderboard`).Scan(&count)
+	return count, err
 }
 
 func (h *LeaderboardHandler) PostUserScore(w http.ResponseWriter, r *http.Request) {
@@ -62,10 +68,10 @@ func (h *LeaderboardHandler) PostUserScore(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	var userID string
+	var userID int
 	err := h.db.QueryRow(r.Context(),
 		`SELECT id FROM users WHERE id = (
-			SELECT user_id FROM sessions WHERE session_token = $1
+			SELECT "userId" FROM sessions WHERE "sessionToken" = $1
 		)`,
 		sessionToken,
 	).Scan(&userID)
@@ -100,12 +106,6 @@ func (h *LeaderboardHandler) PostUserScore(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(resp)
 }
 
-func (h *LeaderboardHandler) getTotalEntries(r *http.Request) (int, error) {
-	var count int
-	err := h.db.QueryRow(r.Context(), `SELECT COUNT(*) FROM leaderboard`).Scan(&count)
-	return count, err
-}
-
 func (h *LeaderboardHandler) getUserPosition(r *http.Request) (UserPosition, error) {
 	var userPosition UserPosition
 	sessionToken := getSessionToken(r)
@@ -114,8 +114,8 @@ func (h *LeaderboardHandler) getUserPosition(r *http.Request) (UserPosition, err
 		return userPosition, nil
 	}
 
-	var authenticatedUserID string
-	query := `SELECT user_id FROM sessions WHERE session_token = $1`
+	var authenticatedUserID int
+	query := `SELECT "userId" FROM sessions WHERE "sessionToken" = $1`
 	err := h.db.QueryRow(r.Context(), query, sessionToken).Scan(&authenticatedUserID)
 
 	if err != nil {
@@ -206,7 +206,7 @@ func (h *LeaderboardHandler) GetLeaderboard(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	count, err := h.getTotalEntries(r)
+	count, err := h.getTotalLeaderboardEntries(r)
 	if err != nil {
 		http.Error(w, "failed to get total entries", http.StatusInternalServerError)
 		return
@@ -233,15 +233,21 @@ func (h *LeaderboardHandler) GetLeaderboard(w http.ResponseWriter, r *http.Reque
 	}
 }
 func (h *LeaderboardHandler) GetUserScore(w http.ResponseWriter, r *http.Request) {
-	userId := r.URL.Query().Get("userId")
-	if userId == "" {
+	userIdStr := r.URL.Query().Get("userId")
+	if userIdStr == "" {
 		http.Error(w, "invalid userId parameter", http.StatusBadRequest)
+		return
+	}
+
+	userId, err := strconv.Atoi(userIdStr)
+	if err != nil {
+		http.Error(w, "userId must be a valid integer", http.StatusBadRequest)
 		return
 	}
 
 	var score int
 	query := `SELECT high_score FROM leaderboard WHERE user_id = $1`
-	err := h.db.QueryRow(r.Context(), query, userId).Scan(&score)
+	err = h.db.QueryRow(r.Context(), query, userId).Scan(&score)
 	if err != nil {
 		http.Error(w, "failed to fetch user score", http.StatusInternalServerError)
 		return
