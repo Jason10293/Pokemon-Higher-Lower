@@ -30,6 +30,10 @@ type LeaderboardEntry struct {
 	AchievedAt  time.Time `json:"achievedAt"`
 }
 
+type userScoreResponse struct {
+	UserId string `json:"userId"`
+	Score  int    `json:"score"`
+}
 type UserPosition struct {
 	Rank  int `json:"rank"`
 	Score int `json:"score"`
@@ -115,7 +119,7 @@ func (h *LeaderboardHandler) getUserPosition(r *http.Request) (UserPosition, err
 	err := h.db.QueryRow(r.Context(), query, sessionToken).Scan(&authenticatedUserID)
 
 	if err != nil {
-		return userPosition, nil
+		return userPosition, err
 	}
 
 	var userRank, userScore int
@@ -129,7 +133,7 @@ func (h *LeaderboardHandler) getUserPosition(r *http.Request) (UserPosition, err
 	err = h.db.QueryRow(r.Context(), query, authenticatedUserID).Scan(&userRank, &userScore)
 
 	if err != nil {
-		return userPosition, nil
+		return userPosition, err
 	}
 
 	userPosition = UserPosition{
@@ -208,7 +212,11 @@ func (h *LeaderboardHandler) GetLeaderboard(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	userPosition, _ := h.getUserPosition(r)
+	userPosition, err := h.getUserPosition(r)
+	if err != nil {
+		http.Error(w, "failed to get user position", http.StatusInternalServerError)
+		return
+	}
 
 	response := LeaderboardResponse{
 		LeaderboardEntries: leaderboard,
@@ -224,7 +232,28 @@ func (h *LeaderboardHandler) GetLeaderboard(w http.ResponseWriter, r *http.Reque
 		return
 	}
 }
+func (h *LeaderboardHandler) GetUserScore(w http.ResponseWriter, r *http.Request) {
+	userId := r.URL.Query().Get("userId")
+	if userId == "" {
+		http.Error(w, "invalid userId parameter", http.StatusBadRequest)
+		return
+	}
 
+	var score int
+	query := `SELECT high_score FROM leaderboard WHERE user_id = $1`
+	err := h.db.QueryRow(r.Context(), query, userId).Scan(&score)
+	if err != nil {
+		http.Error(w, "failed to fetch user score", http.StatusInternalServerError)
+		return
+	}
+
+	resp := userScoreResponse{
+		UserId: userId,
+		Score:  score,
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
 func getSessionToken(r *http.Request) string {
 	cookie, err := r.Cookie("session_token")
 	if err != nil {
