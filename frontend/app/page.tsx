@@ -84,7 +84,7 @@ export default function HomePage() {
 
           <h2>
             <motion.p
-              className="text-muted-foreground mx-auto mt-4 mb-10 max-w-lg text-center text-lg md:text-xl"
+              className="mx-auto mt-4 mb-10 max-w-lg text-center text-lg text-white md:text-xl"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
@@ -119,9 +119,7 @@ export default function HomePage() {
                 transition={{ duration: 0.4, delay: 0.6 + index * 0.1 }}
               >
                 <p className="text-2xl font-bold text-white">{card.title}</p>
-                <p className="text-muted-foreground mt-2 text-sm">
-                  {card.description}
-                </p>
+                <p className="mt-2 text-sm text-white/70">{card.description}</p>
               </motion.div>
             ))}
           </div>

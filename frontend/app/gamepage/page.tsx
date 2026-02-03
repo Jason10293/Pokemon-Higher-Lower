@@ -5,6 +5,7 @@ import { GuessControls } from "@/features/game/components/GuessControls";
 import { CardPanel } from "@/features/game/components/CardPanel";
 import { ErrorNotice } from "@/features/game/components/ErrorNotice";
 import { ScoreDisplay } from "@/features/game/components/ScoreDisplay";
+import { GameOverModal } from "@/features/game/components/GameOverModal";
 import { useCardGame } from "@/features/game/hooks/useGameLogic";
 import type { GameLogic } from "@/features/game/types";
 import FloatingCards from "@/components/FloatingCards";
@@ -15,6 +16,9 @@ export default function HomePage() {
   return (
     <>
       {game.error && <ErrorNotice message={game.error} />}
+      {game.gameOver && (
+        <GameOverModal score={game.score} onRestart={game.restartGame} />
+      )}
       <div className="flex flex-col md:flex-row md:items-stretch">
         <FloatingCards />
         <PulsingDecorations />

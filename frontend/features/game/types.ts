@@ -16,5 +16,7 @@ export type GameLogic = {
   guessed: boolean;
   isAnimating: boolean;
   isMovingCard: boolean;
+  gameOver: boolean;
   handleGuess: (direction: "higher" | "lower") => void;
+  restartGame: () => void;
 };

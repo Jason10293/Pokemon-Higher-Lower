@@ -2,7 +2,7 @@ import { useEffect, useReducer, useRef } from "react";
 import type { Card, GameLogic } from "@/features/game/types";
 import { fetchRandomCard, fetchTwoDifferentCards } from "@/app/gamepage/api/cards";
 
-type GameState = Omit<GameLogic, "handleGuess">;
+type GameState = Omit<GameLogic, "handleGuess" | "restartGame">;
 
 type GameAction =
   | { type: "load_start" }
@@ -11,7 +11,9 @@ type GameAction =
   | { type: "guess_result"; isCorrect: boolean }
   | { type: "advance_start" }
   | { type: "advance_finish"; leftCard: Card; rightCard: Card }
-  | { type: "advance_error"; message: string };
+  | { type: "advance_error"; message: string }
+  | { type: "game_over" }
+  | { type: "restart" };
 
 const initialState: GameState = {
   leftCard: null,
@@ -23,6 +25,7 @@ const initialState: GameState = {
   guessed: false,
   isAnimating: false,
   isMovingCard: false,
+  gameOver: false,
 };
 
 function reducer(state: GameState, action: GameAction): GameState {
@@ -69,6 +72,17 @@ function reducer(state: GameState, action: GameAction): GameState {
         result: null,
         isAnimating: false,
         isMovingCard: false,
+      };
+    case "game_over":
+      return {
+        ...state,
+        gameOver: true,
+        isAnimating: false,
+      };
+    case "restart":
+      return {
+        ...initialState,
+        loading: false,
       };
     default:
       return state;
@@ -134,6 +148,17 @@ export function useCardGame(): GameLogic {
 
     dispatch({ type: "guess_result", isCorrect });
 
+    // If incorrect, trigger game over after animation
+    if (!isCorrect) {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        dispatch({ type: "game_over" });
+      }, 1500); // Wait for animation to complete
+      return;
+    }
+
     const loadNextCard = async () => {
       const controller = createAbortController();
       try {
@@ -165,8 +190,32 @@ export function useCardGame(): GameLogic {
     loadNextCard();
   }
 
+  async function restartGame() {
+    const controller = createAbortController();
+    dispatch({ type: "restart" });
+
+    try {
+      const [first, second] = await fetchTwoDifferentCards(controller.signal);
+      if (controller.signal.aborted) return;
+      dispatch({
+        type: "load_success",
+        leftCard: first,
+        rightCard: second,
+      });
+    } catch (err) {
+      if (!controller.signal.aborted) {
+        console.error(err);
+        dispatch({
+          type: "load_error",
+          message: "Failed to load cards. Please try again.",
+        });
+      }
+    }
+  }
+
   return {
     ...state,
     handleGuess,
+    restartGame,
   };
 }

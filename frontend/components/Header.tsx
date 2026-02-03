@@ -3,6 +3,7 @@ import { Sparkles, User } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/app/providers/auth-provider";
 import SettingsButton from "./SettingsButton";
+import LeaderboardButton from "./LeaderboardButton";
 const Header = () => {
   const { isLoggedIn } = useAuth();
   return (
@@ -14,7 +15,10 @@ const Header = () => {
         </Link>
       </>
       {isLoggedIn ? (
-        <SettingsButton />
+        <div className="flex items-center gap-2">
+          <LeaderboardButton />
+          <SettingsButton />
+        </div>
       ) : (
         <Link
           href="/login"
