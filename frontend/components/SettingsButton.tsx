@@ -31,6 +31,8 @@ const SettingsButton = () => {
               <Image
                 src={avatarUrl || DEFAULT_AVATAR_URL}
                 alt="Avatar"
+                width={96}
+                height={96}
                 className="h-full w-full scale-110 object-cover"
               />
             </span>

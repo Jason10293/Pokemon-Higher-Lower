@@ -49,8 +49,12 @@ const SettingsPage = () => {
     }, 500);
 
     if (!res.ok) {
-      const data = await res.json();
-      toast.error("Error saving profile: " + data.error);
+      try {
+        const data = await res.json();
+        toast.error("Error saving profile: " + (data.details || data.error || "Unknown error"));
+      } catch (jsonError) {
+        toast.error("Error saving profile: Failed to parse response");
+      }
       return;
     }
 
@@ -99,6 +103,8 @@ const SettingsPage = () => {
                   <Image
                     src={avatarUrl || AVATAR_URLS[0]}
                     alt="Avatar"
+                    width={96}
+                    height={96}
                     className="h-full w-full scale-115 rounded-xl"
                   />
                 </div>
@@ -132,6 +138,8 @@ const SettingsPage = () => {
                       <Image
                         src={url}
                         alt="Avatar Option"
+                        width={96}
+                        height={96}
                         className="h-full w-full object-cover"
                       />
                     </button>

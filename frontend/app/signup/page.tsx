@@ -14,11 +14,14 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
+
     if (password !== confirmPassword) {
-      console.log("Passwords do not match");
+      setError("Passwords do not match");
       setLoading(false);
       return;
     }
@@ -30,8 +33,14 @@ export default function SignupPage() {
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      console.log("Error signing up:", data.error);
+      try {
+        const data = await res.json();
+        setError(data.details || data.error || "Failed to sign up");
+        console.log("Error signing up:", data);
+      } catch (jsonError) {
+        setError("Failed to sign up. Please try again.");
+        console.log("Error signing up: Failed to parse response");
+      }
       setLoading(false);
       return;
     }
@@ -82,6 +91,12 @@ export default function SignupPage() {
                   Join the game and start playing!
                 </p>
               </div>
+              {/* Error Message */}
+              {error && (
+                <div className="mb-4 w-full rounded-xl border border-red-500/50 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                  {error}
+                </div>
+              )}
               {/* Login Form */}
               <form
                 className="w-full"
@@ -132,13 +147,14 @@ export default function SignupPage() {
                 or sign up with
                 <span className="h-px flex-1 bg-white/10" />
               </div>
-              <div
+              <button
                 onClick={handleGoogleSignup}
-                className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black"
+                type="button"
+                className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 font-semibold transition duration-300 hover:text-black"
               >
                 <GoogleIcon />
-                <span className="font-semibold">Google</span>
-              </div>
+                Google
+              </button>
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">
                   Have an account?{" "}
