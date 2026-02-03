@@ -1,0 +1,48 @@
+API:
+
+POST /user/score (authenticated)
+Body: { "score": number }  ← Get userId from auth token
+Response: {
+    "newHighScore": boolean,
+    "score": number,
+    "rank": number
+}
+
+
+GET /leaderboard?limit=10&offset=0
+Response: {
+    "leaderboard": [
+        {
+            "rank": number,
+            "userId": "string",
+            "displayName": "string",  ← FROM users JOIN
+            "avatarUrl": "string",    ← FROM users JOIN
+            "score": number,
+            "achievedAt": "timestamp"
+        }
+    ],
+    "total": number,
+    "userPosition": {  ← User's rank even if not in results
+        "rank": number,
+        "score": number
+    }
+}
+
+GET /user/score?userId=string
+Response: {
+    200: {
+        "userId": "string",
+        "score": number
+    },
+    404: {
+        "error": "User not found",
+    }
+}
+
+
+DB Schema:
+user_id (FK)
+high_score
+updated_at
+created_at
+

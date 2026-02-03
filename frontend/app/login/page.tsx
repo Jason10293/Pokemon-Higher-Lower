@@ -108,12 +108,14 @@ export default function LoginPage() {
                 or continue with
                 <span className="h-px flex-1 bg-white/10" />
               </div>
-              <div className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 transition duration-300 hover:text-black">
+              <button
+                onClick={handleGoogleLogin}
+                type="button"
+                className="text-primary border-primary hover:bg-primary flex h-12 w-full cursor-pointer flex-row items-center justify-center gap-3 rounded-xl border px-4 py-2 font-semibold transition duration-300 hover:text-black"
+              >
                 <GoogleIcon />
-                <button className="font-semibold" onClick={handleGoogleLogin}>
-                  Google
-                </button>
-              </div>
+                Google
+              </button>
               <div>
                 <p className="text-muted-foreground mt-4 text-sm">
                   Don&apos;t have an account?{" "}
